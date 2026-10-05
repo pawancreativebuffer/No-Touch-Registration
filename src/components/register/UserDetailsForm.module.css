@@ -1,0 +1,35 @@
+/* Card, title band and footer come from StepCard.module.css (--pad, --field-gap) */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: var(--field-gap);
+  /* Last row's field margin + this = one --pad gap before the next block */
+  margin-bottom: calc(var(--pad) - var(--field-gap));
+}
+
+/* Tighter field spacing than the shared 20px; doubled class outranks Form .field */
+.grid.grid > * {
+  margin-bottom: var(--field-gap);
+}
+
+.notes.notes {
+  margin-bottom: var(--pad);
+}
+
+.labelRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.generate {
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+@media (max-width: 860px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

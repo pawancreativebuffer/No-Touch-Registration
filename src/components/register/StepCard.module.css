@@ -1,0 +1,85 @@
+/* Shared shell for every register step: card, title band and footer */
+.card {
+  background: #ffffff;
+  border: 1px solid #e2e2e2;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  /* One spacing value for the title band, card edges and gaps between blocks */
+  --pad: 20px;
+  --field-gap: 16px;
+  padding: 0 var(--pad) var(--pad);
+}
+
+/* Title band in Ticket-IT secondary, flush with the card's top, left and right edges */
+.titleBar {
+  background-color: var(--secondary);
+  margin: 0 calc(var(--pad) * -1) var(--pad);
+  padding: var(--pad);
+}
+
+.headline {
+  font-size: 20px;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.subline {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* Blocks inside a step; each ends with one --pad gap */
+.section {
+  margin-bottom: var(--pad);
+}
+
+.sectionTitle {
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--secondary);
+  padding-bottom: var(--spacing-sm);
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--field-border);
+}
+
+.sectionIntro {
+  font-size: 14px;
+  color: var(--content-light);
+  margin: -4px 0 12px;
+}
+
+.footerError {
+  margin: 0 0 var(--spacing-sm);
+  padding: 10px 12px;
+  border-radius: 5px;
+  background-color: #fdecea;
+  font-size: 14px;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  padding-top: var(--pad);
+  border-top: 2px dotted var(--divider);
+}
+
+.footer .footerButton {
+  width: auto;
+  min-width: 200px;
+}
+
+@media (max-width: 860px) {
+  .card {
+    --pad: 16px;
+  }
+
+  .footer {
+    flex-direction: column-reverse;
+  }
+
+  .footer .footerButton {
+    width: 100%;
+  }
+}

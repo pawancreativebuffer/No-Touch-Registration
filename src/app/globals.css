@@ -1,0 +1,80 @@
+@font-face {
+  font-family: 'Acumin';
+  src: url('/fonts/AcuminPro-Regular.woff2') format('woff2'),
+    url('/fonts/AcuminPro-Regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Acumin';
+  src: url('/fonts/AcuminPro-Bold.woff2') format('woff2'),
+    url('/fonts/AcuminPro-Bold.woff') format('woff');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Ticket-IT brand (from New-Frontend _variables.scss) */
+  --primary: #f73582;
+  --primary-hover: #e02a72;
+  --secondary: #2b253e;
+  --content-light: #666666;
+  --field-border: #e4e4eb;
+  --divider: #cbcbcb;
+  --subnav-bg: #e6e8ee;
+
+  --primary-pink: #eb2771;
+  --primary-pink-hover: #d21d60;
+  --primary-pink-light: #f7dbe6;
+  --secondary-bg: #f3f4f6;
+  --text-dark: #333333;
+  --text-muted: #6b7280;
+  --border-color: #e5e7eb;
+  --bg-white: #ffffff;
+
+  /* Spacing Variables */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 40px;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  font-family: 'Acumin', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: #f9fafb;
+  color: var(--text-dark);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+
+input {
+  font-family: inherit;
+}
+
+ul {
+  list-style: none;
+}

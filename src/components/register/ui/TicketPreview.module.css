@@ -1,0 +1,162 @@
+.ticket {
+  height: 100%;
+  aspect-ratio: 210 / 297;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  container-type: size;
+  color: #111111;
+  background-color: var(--c2);
+  text-align: center;
+}
+
+.header {
+  height: 19%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--c1);
+  color: #ffffff;
+  font-family: var(--header-font);
+  font-size: min(13cqh, calc(165cqw / var(--chars)));
+  white-space: nowrap;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5cqh;
+  padding: 3cqh 7cqw;
+  background-image:
+    radial-gradient(circle at 15% 35%, transparent 30%, rgba(255, 255, 255, 0.16) 31%, rgba(255, 255, 255, 0.16) 36%, transparent 37%),
+    radial-gradient(circle at 95% 100%, transparent 30%, rgba(255, 255, 255, 0.16) 31%, rgba(255, 255, 255, 0.16) 36%, transparent 37%);
+}
+
+.desc {
+  font-size: 5.5cqh;
+  font-weight: bold;
+  line-height: 1.1;
+}
+
+.descCaps {
+  font-size: 6.5cqh;
+  font-weight: bold;
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+
+.deal {
+  font-size: 6cqh;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.price {
+  font-size: 16cqh;
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+}
+
+.price sup {
+  font-size: 0.45em;
+  vertical-align: 0.9em;
+}
+
+.bigPrice {
+  font-size: 22cqh;
+}
+
+.unit {
+  font-size: 4.5cqh;
+  font-weight: bold;
+}
+
+.percent {
+  font-size: 12cqh;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.percent small {
+  font-size: 0.3em;
+  vertical-align: top;
+}
+
+.percent em {
+  font-style: normal;
+  font-size: 0.45em;
+  background-color: #111111;
+  color: #ffffff;
+  padding: 0 0.15em;
+  vertical-align: middle;
+}
+
+.was {
+  font-size: 5cqh;
+  font-weight: bold;
+}
+
+.table {
+  width: 100%;
+  font-size: 2.6cqh;
+  border-collapse: collapse;
+}
+
+.table td {
+  padding: 0.4cqh 0;
+  text-align: left;
+}
+
+.table td:last-child {
+  text-align: right;
+  font-weight: bold;
+}
+
+.lines {
+  list-style: disc;
+  text-align: left;
+  font-size: 2.6cqh;
+  padding-left: 4cqw;
+}
+
+.footer {
+  margin-top: auto;
+  align-self: flex-start;
+  font-size: 2.6cqh;
+  font-weight: bold;
+}
+
+/* Grey "variable" layout */
+.variable {
+  background-color: #e2e2e4;
+}
+
+.variable .header {
+  background-color: #b9b9bd;
+  color: #111111;
+}
+
+.variable .body {
+  background-image: none;
+}
+
+/* White "variable" layout with colour header */
+.variableWhite {
+  background-color: #ffffff;
+}
+
+.variableWhite .header {
+  background-color: var(--c2);
+  color: #111111;
+}
+
+.variableWhite .body {
+  background-image: none;
+}

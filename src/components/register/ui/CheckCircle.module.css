@@ -1,0 +1,22 @@
+.circle {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 2px solid var(--primary);
+  background-color: #ffffff;
+  color: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.circle:hover {
+  box-shadow: 0 0 0 4px rgba(247, 53, 130, 0.15);
+}
+
+.checked {
+  background-color: var(--primary);
+  color: #ffffff;
+}

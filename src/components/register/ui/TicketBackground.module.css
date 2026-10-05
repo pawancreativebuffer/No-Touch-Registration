@@ -1,0 +1,178 @@
+.ticket {
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  background-color: #ffffff;
+  container-type: size;
+  height: 100%;
+}
+
+.portrait {
+  aspect-ratio: 210 / 297;
+  flex-direction: column;
+}
+
+.landscape {
+  aspect-ratio: 297 / 210;
+  flex-direction: row;
+}
+
+.header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.portrait .header {
+  height: 24%;
+}
+
+.landscape .header {
+  width: 22%;
+}
+
+.headerText {
+  font-family: var(--header-font);
+  text-transform: uppercase;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+/* Shrink long headers ("Everyday Value") so they fit the ticket width */
+.portrait .headerText {
+  font-size: min(14cqh, calc(165cqw / var(--chars)));
+}
+
+.landscape .headerText {
+  font-size: min(11cqw, calc(165cqh / var(--chars)));
+  transform: rotate(-90deg);
+}
+
+.body {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo {
+  position: absolute;
+  right: 6%;
+  bottom: 5%;
+  max-width: 28%;
+  max-height: 16%;
+  object-fit: contain;
+}
+
+/* ---------- Everyday: core texture with brand-colour header ---------- */
+.core .header {
+  background-color: var(--c1);
+  color: #ffffff;
+}
+
+.core.portrait .header {
+  border-bottom: 4px solid var(--c2);
+}
+
+.core.landscape .header {
+  border-right: 4px solid var(--c2);
+}
+
+.core .body {
+  background-image: var(--texture);
+  background-size: cover;
+  background-position: center;
+}
+
+/* ---------- Promo styles ---------- */
+
+/* Solid header, colour body with soft circles */
+.classic .header {
+  background-color: var(--c1);
+  color: #ffffff;
+}
+
+.classic .body {
+  background-color: var(--c2);
+  background-image:
+    radial-gradient(circle at 20% 40%, transparent 30%, rgba(255, 255, 255, 0.18) 31%, rgba(255, 255, 255, 0.18) 36%, transparent 37%),
+    radial-gradient(circle at 90% 95%, transparent 30%, rgba(255, 255, 255, 0.18) 31%, rgba(255, 255, 255, 0.18) 36%, transparent 37%);
+}
+
+/* Black leather header with gold italic text, cream body */
+.gold .header {
+  background: linear-gradient(180deg, #2f2f2f, #111111);
+  border-bottom: 3px solid #d6a73c;
+}
+
+.gold .headerText {
+  color: #e6b64a;
+  font-style: italic;
+  letter-spacing: 1px;
+}
+
+.gold .body {
+  background: linear-gradient(160deg, #f1ebe0, #e4dccd);
+}
+
+/* Slanted brand-colour header, white body, colour frame */
+.slant {
+  border: 5px solid var(--c2);
+}
+
+.slant .header {
+  background: linear-gradient(170deg, var(--c2) 70%, transparent 71%);
+}
+
+.slant .headerText {
+  color: #111111;
+  transform: rotate(-8deg);
+}
+
+.slant.landscape .header {
+  background: linear-gradient(100deg, var(--c2) 75%, transparent 76%);
+}
+
+.slant.landscape .headerText {
+  transform: rotate(-90deg);
+}
+
+/* Thick colour frame with angled header */
+.frame {
+  border: 6px solid var(--c1);
+}
+
+.frame .header {
+  background: linear-gradient(172deg, var(--c1) 72%, #ffffff 73%);
+  color: #ffffff;
+}
+
+.frame .headerText {
+  transform: rotate(-6deg);
+}
+
+.frame.landscape .header {
+  background: linear-gradient(98deg, var(--c1) 75%, #ffffff 76%);
+}
+
+.frame.landscape .headerText {
+  transform: rotate(-90deg);
+}
+
+/* Gold gradient "Super Sale" banner with dark frame */
+.sale {
+  border: 5px solid #1d1d1d;
+}
+
+.sale .header {
+  background: linear-gradient(120deg, #fbe3a1, #d39b2a 60%, #fbe3a1);
+}
+
+.sale .headerText {
+  color: #111111;
+  font-style: italic;
+}

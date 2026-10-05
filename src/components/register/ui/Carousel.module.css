@@ -1,0 +1,80 @@
+.carousel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.stage {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.track {
+  position: relative;
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.item {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.45s ease, opacity 0.45s ease, filter 0.45s ease;
+  filter: saturate(0.85) brightness(0.97);
+}
+
+.item > * {
+  height: 100%;
+}
+
+.center {
+  filter: none;
+  cursor: pointer;
+}
+
+.center > * {
+  box-shadow: 0 6px 18px rgba(43, 37, 62, 0.25);
+}
+
+/* Pink triangle arrows from the design */
+.arrow {
+  flex-shrink: 0;
+  width: 0;
+  height: 0;
+  border-top: 26px solid transparent;
+  border-bottom: 26px solid transparent;
+  transition: opacity 0.2s ease;
+}
+
+.arrow:hover {
+  opacity: 0.8;
+}
+
+.prev {
+  border-right: 34px solid var(--primary);
+  margin-right: var(--spacing-sm);
+}
+
+.next {
+  border-left: 34px solid var(--primary);
+  margin-left: var(--spacing-sm);
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.counter {
+  font-size: 13px;
+  color: var(--content-light);
+}

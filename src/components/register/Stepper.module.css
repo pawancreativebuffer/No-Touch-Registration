@@ -1,0 +1,81 @@
+.stepper {
+  --dot: 22px;
+  --edge: calc(100% / (var(--count) * 2));
+  position: relative;
+  padding: var(--spacing-lg) 0 var(--spacing-md);
+}
+
+/* Track runs between the centres of the first and last dots */
+.track {
+  position: absolute;
+  top: calc(var(--spacing-lg) + var(--dot) / 2 - 3px);
+  left: var(--edge);
+  right: var(--edge);
+  height: 6px;
+  border-radius: 3px;
+  background-color: #f6bfd6;
+}
+
+.fill {
+  height: 100%;
+  background-color: var(--primary);
+  transition: width 0.3s ease;
+}
+
+.steps {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--count), 1fr);
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.dot {
+  width: var(--dot);
+  height: var(--dot);
+  border-radius: 50%;
+  background-color: #ffffff;
+  border: 2px solid var(--primary);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dot:disabled {
+  cursor: default;
+}
+
+.done .dot {
+  background-color: var(--primary);
+}
+
+.current .dot {
+  box-shadow: 0 0 0 5px rgba(247, 53, 130, 0.2);
+}
+
+.label {
+  margin-top: 12px;
+  font-size: 0.875rem;
+  line-height: 1.3;
+  color: #3b4a5a;
+  white-space: nowrap;
+}
+
+.current .label {
+  color: var(--primary);
+  font-weight: bold;
+}
+
+@media (max-width: 760px) {
+  .label {
+    white-space: normal;
+    font-size: 0.7rem;
+  }
+}
