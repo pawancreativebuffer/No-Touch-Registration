@@ -1,0 +1,408 @@
+/* Plastic ESL housing around the e-paper canvas (sizes are in the label's own pixels) */
+.device {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(160deg, #fdfdfe 0%, #e4e6ea 60%, #d3d6dc 100%);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+}
+
+/* E-paper canvas: black, white, red and yellow only */
+.canvas {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  container-type: size;
+  background-color: var(--white);
+  color: var(--black);
+  font-family: var(--font);
+  text-align: center;
+  line-height: 1.05;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+
+/* ---------- Header ---------- */
+.head {
+  flex-shrink: 0;
+  height: 17cqh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3cqw;
+  padding: 0 4cqw;
+}
+
+.headText {
+  flex: 1;
+  font-family: var(--header-font);
+  text-transform: uppercase;
+  white-space: nowrap;
+  line-height: 1;
+  font-size: min(11cqh, calc(150cqw / var(--chars)));
+}
+
+.landscape .head,
+.multi .head {
+  height: 15cqh;
+}
+
+.landscape .headText,
+.multi .headText {
+  font-size: min(10cqh, calc(120cqw / var(--chars)));
+}
+
+.logo {
+  flex-shrink: 0;
+  height: 80%;
+  max-width: 30cqw;
+  object-fit: contain;
+  filter: grayscale(1) contrast(1.4);
+}
+
+/* ---------- Body ---------- */
+.body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2cqh;
+  padding: 2cqh 5cqw;
+}
+
+.info,
+.priceBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1cqh;
+}
+
+.name {
+  font-weight: bold;
+  font-size: min(7.5cqh, 14cqw);
+}
+
+.size,
+.unit {
+  font-size: min(5cqh, 9cqw);
+}
+
+.price {
+  font-weight: 900;
+  line-height: 0.85;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  font-size: min(24cqh, calc(86cqw / var(--pw)));
+}
+
+.price sup {
+  font-size: 0.45em;
+  vertical-align: 0.85em;
+}
+
+/* Saving or was price strip (black and white, or red on yellow) */
+.strip {
+  font-weight: 900;
+  text-transform: uppercase;
+  padding: 0.6cqh 3cqw;
+  font-size: min(6cqh, 11cqw);
+  white-space: nowrap;
+  background-color: var(--black);
+  color: var(--white);
+}
+
+.wasStrip {
+  background-color: var(--yellow);
+  color: var(--red);
+}
+
+.percent,
+.deal {
+  font-weight: 900;
+  text-transform: uppercase;
+  color: var(--red);
+  font-size: min(9cqh, 15cqw);
+}
+
+.deal {
+  color: inherit;
+}
+
+.badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(18cqh, 26cqw);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background-color: var(--red);
+  color: var(--white);
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: min(5cqh, 8cqw);
+  transform: rotate(-10deg);
+}
+
+.members {
+  display: flex;
+  align-items: flex-end;
+  gap: 5cqw;
+}
+
+.members > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6cqh;
+}
+
+.members small {
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: min(3.6cqh, 6cqw);
+}
+
+.price.memberPrice {
+  color: var(--red);
+  font-size: min(16cqh, calc(45cqw / var(--pw)));
+}
+
+.price.otherPrice {
+  font-size: min(11cqh, calc(32cqw / var(--pw)));
+}
+
+/* Product focus: bigger name, smaller price */
+.l-product .name {
+  font-size: min(10cqh, 17cqw);
+}
+
+.l-product .price {
+  font-size: min(18cqh, calc(66cqw / var(--pw)));
+}
+
+/* Offer layouts lead with the price */
+.l-save .priceBlock,
+.l-percent .priceBlock,
+.l-wasnow .priceBlock,
+.l-multibuy .priceBlock,
+.l-members .priceBlock,
+.l-new .priceBlock {
+  order: -1;
+}
+
+.square .price {
+  font-size: min(28cqh, calc(80cqw / var(--pw)));
+}
+
+.square .name {
+  font-size: 9cqh;
+}
+
+/* Wide labels: product details on the left, price on the right */
+.landscape .body {
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 4cqw;
+  padding: 2cqh 5cqw;
+}
+
+.landscape .priceBlock {
+  order: 0;
+}
+
+.landscape .info {
+  flex: 1;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.landscape .name {
+  font-size: 10cqh;
+}
+
+.landscape .size,
+.landscape .unit {
+  font-size: 6cqh;
+}
+
+.landscape .price {
+  font-size: min(40cqh, calc(46cqw / var(--pw)));
+}
+
+.landscape.l-product .name {
+  font-size: 13cqh;
+}
+
+.landscape.l-product .price {
+  font-size: min(30cqh, calc(36cqw / var(--pw)));
+}
+
+.landscape .strip {
+  font-size: 7cqh;
+}
+
+.landscape .percent,
+.landscape .deal {
+  font-size: 9cqh;
+}
+
+.landscape .price.memberPrice {
+  font-size: min(26cqh, calc(26cqw / var(--pw)));
+}
+
+.landscape .price.otherPrice {
+  font-size: min(18cqh, calc(18cqw / var(--pw)));
+}
+
+/* ---------- Footer ---------- */
+.foot {
+  flex-shrink: 0;
+  height: 9cqh;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3cqw;
+  padding: 0 4cqw;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: min(4.5cqh, 8cqw);
+  font-weight: bold;
+}
+
+.barcode {
+  width: 30cqw;
+  height: 60%;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--black) 0 2px,
+    transparent 2px 4px,
+    var(--black) 4px 5px,
+    transparent 5px 8px,
+    var(--black) 8px 11px,
+    transparent 11px 12px
+  );
+}
+
+/* ---------- Multi Product ---------- */
+.grid {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 1cqh;
+  padding: 1.5cqh 2cqw;
+}
+
+.cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8cqh;
+  border: max(1px, 0.4cqh) solid var(--black);
+  overflow: hidden;
+}
+
+.cellName {
+  font-weight: bold;
+  font-size: 5.5cqh;
+}
+
+.cellSize {
+  font-size: 3.8cqh;
+}
+
+.multi .price {
+  font-size: min(13cqh, calc(36cqw / var(--pw)));
+}
+
+.multi .strip {
+  font-size: 3.8cqh;
+}
+
+/* ---------- Everyday styles: black and white only ---------- */
+.bwBand .head {
+  background-color: var(--black);
+  color: var(--white);
+}
+
+.bwLine .head {
+  border-bottom: 1.4cqh solid var(--black);
+}
+
+.bwFrame {
+  border: var(--frame) solid var(--black);
+}
+
+.bwFrame .head {
+  border-bottom: 0.8cqh solid var(--black);
+}
+
+/* ---------- Promotional styles: the Paper designs in ESL colours ---------- */
+
+/* Classic: solid red header, yellow body */
+.classic {
+  background-color: var(--yellow);
+}
+
+.classic .head {
+  background-color: var(--red);
+  color: var(--white);
+}
+
+.classic .cell {
+  border-color: var(--red);
+}
+
+/* Gold: black header with yellow italic text, white body */
+.gold .head {
+  background-color: var(--black);
+  border-bottom: 1cqh solid var(--yellow);
+}
+
+.gold .headText {
+  color: var(--yellow);
+  font-style: italic;
+}
+
+/* Slant: slanted yellow header, yellow frame */
+.slant {
+  border: var(--frame) solid var(--yellow);
+}
+
+.slant .head {
+  background: linear-gradient(172deg, var(--yellow) 72%, transparent 73%);
+}
+
+.slant .headText {
+  transform: rotate(-5deg);
+}
+
+/* Frame: thick red frame with an angled red header */
+.frame {
+  border: var(--frame) solid var(--red);
+}
+
+.frame .head {
+  background: linear-gradient(174deg, var(--red) 74%, transparent 75%);
+  color: var(--white);
+}
+
+.frame .headText {
+  transform: rotate(-4deg);
+}
+
+/* Super sale: yellow banner with black italic text, black frame */
+.sale {
+  border: var(--frame) solid var(--black);
+}
+
+.sale .head {
+  background-color: var(--yellow);
+}
+
+.sale .headText {
+  font-style: italic;
+}

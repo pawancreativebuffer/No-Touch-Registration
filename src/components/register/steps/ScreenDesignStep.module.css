@@ -1,0 +1,36 @@
+.thumb {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid var(--field-border);
+}
+
+/* Store-like backdrop with every chosen screen */
+.preview {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 28px;
+  padding: 28px var(--pad);
+  border-radius: 8px;
+  background: radial-gradient(ellipse at 50% 30%, #4a4458 0%, #2b253e 70%);
+}
+
+.preview figure {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+}
+
+.wideItem {
+  flex: 1 1 100%;
+}
+
+.preview figcaption {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.85);
+}

@@ -1,0 +1,46 @@
+/* Same look as the paper quantity stepper on the printers step */
+.qty {
+  display: inline-flex;
+  align-items: center;
+  height: 36px;
+  border: 1px solid var(--field-border);
+  border-radius: 5px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.qty button {
+  width: 32px;
+  height: 100%;
+  font-size: 18px;
+  color: var(--secondary);
+}
+
+.qty button:hover:not(:disabled) {
+  background-color: #f3f4f6;
+}
+
+.qty button:disabled {
+  color: #c4c8d0;
+  cursor: default;
+}
+
+.qty input {
+  width: 56px;
+  height: 100%;
+  border: none;
+  border-left: 1px solid var(--field-border);
+  border-right: 1px solid var(--field-border);
+  text-align: center;
+  font-size: 14px;
+  color: var(--secondary);
+  outline: none;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.qty input::-webkit-outer-spin-button,
+.qty input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

@@ -1,0 +1,101 @@
+.showcase {
+  border-radius: 8px;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 20%, #4a4458 0%, #2b253e 75%);
+}
+
+.outputs {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+  padding: 32px var(--pad) 24px;
+}
+
+.output {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
+}
+
+.wideOutput {
+  flex: 1 1 420px;
+}
+
+.output figcaption {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.paper {
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+  animation: fade 0.6s ease both;
+}
+
+.fade {
+  animation: fade 0.6s ease both;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.now {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px var(--pad);
+  background-color: rgba(0, 0, 0, 0.25);
+  color: #ffffff;
+  font-size: 14px;
+}
+
+.now s {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.live {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background-color: var(--primary);
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.dots {
+  margin-left: auto;
+  display: flex;
+  gap: 6px;
+}
+
+.dots i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.3);
+  transition: background-color 0.3s ease;
+}
+
+.dots .dotOn {
+  background-color: var(--primary);
+}

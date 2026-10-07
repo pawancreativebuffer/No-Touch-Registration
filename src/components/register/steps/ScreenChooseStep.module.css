@@ -1,0 +1,29 @@
+/* Bars are very wide, so each gets a full row */
+.bar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--field-gap);
+}
+
+.wide {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--field-gap);
+}
+
+.portrait {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--field-gap);
+}
+
+.stage {
+  background: linear-gradient(180deg, #eef0f3, #dfe2e7);
+}
+
+@media (max-width: 860px) {
+  .wide,
+  .portrait {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

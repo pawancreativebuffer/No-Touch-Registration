@@ -1,13 +1,3 @@
-export const REGISTER_STEPS = [
-  'Start',
-  'Print Process and Sizes',
-  'Promotional Ticket Sizes',
-  'Build your Everyday Ticket',
-  'Build your Promo Ticket',
-  'Select Font layout Test',
-  'Buy Printers & Paper',
-];
-
 export interface UserDetails {
   userName: string;
   login: string;

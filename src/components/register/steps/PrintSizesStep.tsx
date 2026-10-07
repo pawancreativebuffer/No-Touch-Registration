@@ -11,7 +11,7 @@ import { PRINT_METHODS, PrintMethod, SIZE_GROUPS } from '../data';
 import { PrintSetup } from '../state';
 
 interface PrintSizesStepProps {
-  kind: 'Standard' | 'Promotional';
+  kind: 'Everyday' | 'Promotional';
   value: PrintSetup;
   onChange: (value: PrintSetup) => void;
   onBack: () => void;

@@ -1,0 +1,159 @@
+/* Text sizes use the ticket's container units, so a layout scales with any ticket size */
+.text {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.4cqh;
+  padding: 3cqh 6cqw 2cqh;
+  text-align: center;
+  color: #111111;
+  line-height: 1.05;
+}
+
+.desc {
+  font-weight: bold;
+  font-size: min(5.5cqh, 7cqw);
+}
+
+.unit {
+  font-size: min(4cqh, 5cqw);
+  font-weight: bold;
+}
+
+.price {
+  font-weight: 900;
+  line-height: 0.85;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  font-size: min(14cqh, 18cqw);
+}
+
+.price sup {
+  font-size: 0.45em;
+  vertical-align: 0.85em;
+}
+
+.big {
+  font-size: min(20cqh, 26cqw);
+}
+
+.lines {
+  list-style: disc;
+  text-align: left;
+  font-size: min(3.4cqh, 4.4cqw);
+  padding-left: 5cqw;
+}
+
+.deal {
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: min(7cqh, 9cqw);
+}
+
+.strip {
+  padding: 0.3em 0.8em;
+  background-color: #111111;
+  color: #ffffff;
+  font-weight: 900;
+  text-transform: uppercase;
+  white-space: nowrap;
+  font-size: min(5cqh, 6.5cqw);
+}
+
+.was {
+  background-color: #f5c400;
+  color: #b31f2b;
+}
+
+.percent {
+  font-weight: 900;
+  text-transform: uppercase;
+  color: #b31f2b;
+  font-size: min(10cqh, 13cqw);
+}
+
+.badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(18cqh, 24cqw);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background-color: #b31f2b;
+  color: #ffffff;
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: min(5cqh, 6.5cqw);
+  transform: rotate(-10deg);
+}
+
+.members {
+  display: flex;
+  align-items: flex-end;
+  gap: 5cqw;
+}
+
+.members > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8cqh;
+}
+
+.members small {
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: min(3.4cqh, 4.4cqw);
+}
+
+.members .price {
+  font-size: min(12cqh, 15cqw);
+}
+
+.members > div:first-child .price {
+  color: #b31f2b;
+}
+
+.footer {
+  margin-top: auto;
+  align-self: flex-start;
+  font-size: min(2.6cqh, 3.4cqw);
+  font-weight: bold;
+}
+
+/* ---------- Uploaded image backgrounds ---------- */
+.image {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  container-type: size;
+  background-color: #ffffff;
+  background-size: cover;
+  background-position: center;
+}
+
+.portrait {
+  aspect-ratio: 210 / 297;
+}
+
+.landscape {
+  aspect-ratio: 297 / 210;
+}
+
+.image.fill {
+  width: 100%;
+  aspect-ratio: auto;
+}
+
+/* Text sits below a header area, like on our designed backgrounds */
+.imageBody {
+  position: absolute;
+  inset: 22% 0 0 0;
+}
+
+.landscape .imageBody {
+  inset: 0 0 0 22%;
+}

@@ -1,0 +1,154 @@
+.group {
+  border: 1px solid var(--field-border);
+  border-radius: 8px;
+  padding: var(--field-gap);
+}
+
+.groupHead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.groupHead h3 {
+  flex: 1;
+  font-size: 18px;
+  color: var(--secondary);
+}
+
+.groupArt {
+  width: 64px;
+  height: 46px;
+  flex-shrink: 0;
+}
+
+.groupTotal {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--secondary);
+  text-align: right;
+}
+
+.groupTotal small {
+  font-size: 13px;
+  font-weight: normal;
+  color: var(--content-light);
+}
+
+.sectionRow td {
+  padding-top: 14px;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--primary);
+  text-align: left !important;
+}
+
+.totals {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: var(--field-gap);
+  border-radius: 8px;
+  background-color: #fdeef4;
+}
+
+.totals > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--field-gap);
+  color: var(--secondary);
+  font-size: 16px;
+}
+
+.totals strong {
+  font-size: 24px;
+}
+
+/* ---------- Confirmation ---------- */
+.confirm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin: 0 calc(var(--pad) * -1) var(--pad);
+  padding: 48px var(--pad) 40px;
+  text-align: center;
+  color: #ffffff;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(247, 53, 130, 0.45), transparent 45%),
+    radial-gradient(circle at 85% 80%, rgba(247, 53, 130, 0.35), transparent 40%),
+    var(--secondary);
+}
+
+.tick {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary);
+  box-shadow: 0 0 0 10px rgba(247, 53, 130, 0.25);
+  animation: pop 0.6s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+
+.confirm h2 {
+  margin-top: 12px;
+  font-size: 32px;
+  animation: rise 0.6s ease 0.2s both;
+}
+
+.confirm p {
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.85);
+  animation: rise 0.6s ease 0.35s both;
+}
+
+.confirm small {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 6px 0;
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes rise {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@media (max-width: 860px) {
+  .confirm h2 {
+    font-size: 24px;
+  }
+
+  .groupHead {
+    flex-wrap: wrap;
+  }
+}

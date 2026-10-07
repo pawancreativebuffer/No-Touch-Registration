@@ -125,6 +125,16 @@
   border-color: var(--primary);
 }
 
+/* Mouse clicks should not leave a dark focus ring that looks like a selection */
+.chip:focus {
+  outline: none;
+}
+
+.chip:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
 .chipOn {
   background-color: var(--primary);
   border-color: var(--primary);
@@ -146,6 +156,13 @@
   flex-direction: column;
 }
 
+.aiText {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
 .ai strong {
   font-size: 16px;
   color: var(--secondary);
@@ -161,7 +178,247 @@
   min-width: 180px;
 }
 
+/* ---------- Select / Upload tabs ---------- */
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--field-gap);
+}
+
+.tab {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 14px var(--field-gap);
+  border: 1px solid var(--field-border);
+  border-radius: 8px;
+  background: #ffffff;
+  text-align: left;
+  color: var(--secondary);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.tab:hover {
+  border-color: #f6bfd6;
+}
+
+.tab strong {
+  font-size: 16px;
+}
+
+.tab small {
+  font-size: 13px;
+  color: var(--content-light);
+}
+
+.tabOn,
+.tabOn:hover {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary);
+  background-color: #fdeef4;
+}
+
+/* ---------- Generated tickets, one per header ---------- */
+.ticketGroups {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pad);
+}
+
+.groupTitle {
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--secondary);
+}
+.tickets {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: var(--pad);
+  padding: var(--pad);
+  border-radius: 8px;
+  background: linear-gradient(180deg, #f6f7f9, #eceef2);
+}
+
+.ticketItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  animation: ticketIn 0.35s ease;
+}
+
+.ticketPortrait,
+.ticketLandscape {
+  box-shadow: 0 6px 18px rgba(43, 37, 62, 0.2);
+}
+
+.ticketPortrait {
+  height: 220px;
+}
+
+.ticketLandscape {
+  height: 156px;
+}
+
+.ticketItem figcaption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.2;
+  color: var(--secondary);
+}
+
+.ticketItem figcaption strong {
+  font-size: 14px;
+}
+
+.ticketItem figcaption small {
+  font-size: 12px;
+  color: var(--content-light);
+}
+
+.ticketsEmpty {
+  padding: var(--field-gap);
+  border: 1px dashed var(--field-border);
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--content-light);
+  text-align: center;
+}
+
+@keyframes ticketIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- AI prompt ---------- */
+/* Build with AI tab: prompt on top, button underneath */
+.ai.aiStack {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.aiStack .aiButton {
+  align-self: flex-start;
+}
+
+.prompt.prompt {
+  min-height: 110px;
+  margin-top: 8px;
+  background: #ffffff;
+}
+
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  vertical-align: -3px;
+  border-radius: 50%;
+  border: 3px solid #f6bfd6;
+  border-top-color: var(--primary);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.aiResult {
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: #2f6b45;
+}
+
+/* ---------- Uploads ---------- */
+.uploads {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--field-gap);
+}
+
+.uploadBox .dropzone {
+  min-height: 110px;
+}
+
+.fits {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--field-gap);
+}
+
+.fit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.fitBox {
+  width: 100%;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #f6f7f9, #eceef2);
+}
+
+.fitTicket {
+  max-width: 100%;
+  max-height: 100%;
+  overflow: hidden;
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(43, 37, 62, 0.2);
+}
+
+.fitImage {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+}
+
+.fitEmpty {
+  border: 1px dashed var(--primary);
+  box-shadow: none;
+}
+
+.fit figcaption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.2;
+  color: var(--secondary);
+}
+
+.fit figcaption strong {
+  font-size: 14px;
+}
+
+.fit figcaption small {
+  font-size: 12px;
+  color: var(--content-light);
+}
+
 @media (max-width: 860px) {
+  .tabs,
+  .uploads {
+    grid-template-columns: 1fr;
+  }
+
   .grid {
     grid-template-columns: 1fr;
   }
@@ -174,4 +431,186 @@
     flex-direction: column;
     align-items: stretch;
   }
+}
+
+.sample {
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+/* ---------- Promotional: accordion of promotion types ---------- */
+.accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.accItem {
+  border: 1px solid var(--field-border);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.accOpen {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary);
+}
+
+/* One line: name on the left, description in the middle, status and arrow on the right */
+.accHead {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--field-gap);
+  padding: 10px var(--field-gap);
+  background: #ffffff;
+  text-align: left;
+  color: var(--secondary);
+}
+
+.accHead:hover {
+  background-color: #fdf6f9;
+}
+
+.accHead:focus {
+  outline: none;
+}
+
+.accHead:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+}
+
+.accOpen .accHead {
+  background-color: #fdeef4;
+}
+
+.accTitle {
+  flex-shrink: 0;
+  width: 170px;
+  font-size: 15px;
+}
+
+.accText {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+  font-size: 13px;
+  color: var(--content-light);
+}
+
+.accStatus {
+  flex-shrink: 0;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background-color: #f1f2f5;
+  font-size: 12px;
+  font-weight: bold;
+  color: var(--content-light);
+  white-space: nowrap;
+}
+
+.accAdded {
+  background-color: #e5f5eb;
+  color: #2f8a52;
+}
+
+/* Down arrow that turns up when open */
+.chevron {
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid var(--secondary);
+  border-bottom: 2px solid var(--secondary);
+  transform: rotate(45deg) translateY(-3px);
+  transition: transform 0.2s ease;
+}
+
+.accOpen .chevron {
+  transform: rotate(-135deg) translateY(-3px);
+}
+
+.accBody {
+  padding: var(--field-gap);
+  border-top: 1px solid var(--field-border);
+  animation: accIn 0.25s ease;
+}
+
+.accCaption {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--content-light);
+}
+
+.accCaption strong {
+  color: var(--secondary);
+}
+
+@keyframes accIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 860px) {
+  .accHead {
+    flex-wrap: wrap;
+  }
+
+  .accTitle {
+    width: auto;
+    flex: 1;
+  }
+
+  .accText {
+    order: 4;
+    flex-basis: 100%;
+    text-align: left;
+  }
+}
+
+/* ---------- Promotion tabs above the size fits ---------- */
+.fitTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: var(--field-gap);
+}
+
+.fitTab {
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--field-border);
+  border-radius: 5px;
+  background: #ffffff;
+  font-size: 14px;
+  color: var(--secondary);
+  transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+.fitTab:hover {
+  border-color: var(--primary);
+}
+
+.fitTab:focus {
+  outline: none;
+}
+
+.fitTab:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.fitTabOn,
+.fitTabOn:hover {
+  background-color: var(--secondary);
+  border-color: var(--secondary);
+  color: #ffffff;
 }

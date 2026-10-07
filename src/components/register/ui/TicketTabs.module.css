@@ -1,0 +1,91 @@
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: var(--field-gap);
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 16px;
+  border: 1px solid var(--field-border);
+  border-radius: 5px;
+  background: #ffffff;
+  font-size: 14px;
+  color: var(--secondary);
+  transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+.tab:hover {
+  border-color: var(--primary);
+}
+
+.tab:focus,
+.promoTab:focus {
+  outline: none;
+}
+
+.tab:focus-visible,
+.promoTab:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.tabOn,
+.tabOn:hover {
+  background-color: var(--secondary);
+  border-color: var(--secondary);
+  color: #ffffff;
+}
+
+/* Promotions inside the Promotional tab */
+.promoTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: -6px 0 var(--field-gap);
+  padding: 8px;
+  border-radius: 8px;
+  background-color: #f3f4f6;
+}
+
+.promoTab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 5px;
+  font-size: 13px;
+  color: var(--secondary);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.promoTab:hover {
+  color: var(--primary);
+}
+
+.promoTabOn,
+.promoTabOn:hover {
+  background-color: #ffffff;
+  color: var(--primary);
+  font-weight: bold;
+  box-shadow: 0 1px 3px rgba(43, 37, 62, 0.15);
+}
+
+/* Small green tick */
+.tick {
+  width: 6px;
+  height: 11px;
+  margin-right: 2px;
+  border-right: 2px solid #2f8a52;
+  border-bottom: 2px solid #2f8a52;
+  transform: rotate(45deg) translateY(-2px);
+}
+
+.tabOn .tick {
+  border-color: #7fd8a0;
+}

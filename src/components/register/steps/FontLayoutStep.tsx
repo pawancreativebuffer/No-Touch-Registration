@@ -6,34 +6,59 @@ import form from '../../ui/Form.module.css';
 import styles from './FontLayoutStep.module.css';
 import Carousel from '../ui/Carousel';
 import TicketBackground from '../ui/TicketBackground';
-import TicketPreview from '../ui/TicketPreview';
+import PaperTicket, { TicketData } from '../ui/PaperTicket';
 import StepFooter from '../ui/StepFooter';
-import { DOWNLOADS, PROMO_HEADERS, SAMPLE_TICKET, TestTicket, TEXT_LAYOUTS } from '../data';
+import TicketTabs from '../ui/TicketTabs';
+import { DOWNLOADS, TestTicket, TICKET_LAYOUTS, TicketLayoutId } from '../data';
 import { TICKET_FONTS } from '../fonts';
-import { BackgroundSetup, FontSetup } from '../state';
+import { Orientation, PaperTicketDef, paperTickets } from '../paperTickets';
+import { BackgroundSetup, BrandSetup, FontSetup } from '../state';
 
 interface FontLayoutStepProps {
   value: FontSetup;
   onChange: (value: FontSetup) => void;
+  /** Backgrounds picked on the Everyday and Promotional background steps */
+  everyday: BackgroundSetup;
   promo: BackgroundSetup;
+  brand: BrandSetup;
   onBack: () => void;
   onNext: () => void;
+  nextLabel: string;
   onOrderStock: () => void;
 }
 
 const TICKET_FIELDS: { key: keyof TestTicket; label: string; type?: string }[] = [
-  { key: 'offer', label: 'Offer' },
   { key: 'description', label: 'Description' },
   { key: 'deal', label: 'Deal' },
   { key: 'price', label: 'Price' },
+  { key: 'was', label: 'Regular price' },
   { key: 'unit', label: 'Unit' },
   { key: 'startDate', label: 'Offer Start Date', type: 'date' },
   { key: 'endDate', label: 'Offer End Date', type: 'date' },
 ];
 
-// Layout cards use one fixed font so changing the font carousel doesn't redraw them;
-// the chosen font is applied on the "Build a Ticket" preview.
-const LAYOUT_PREVIEW_FONT = TICKET_FONTS[1].family;
+/** Sample product shown on the layout cards */
+const SAMPLE_DATA: TicketData = { description: 'Fresh Bananas per kg', unit: '$4.20 / kg', price: 3.49, was: 4.2, qty: 2, footer: 'Available while stocks last' };
+
+const formatDate = (iso: string) => {
+  if (!iso) return '';
+  const [y, m, d] = iso.split('-');
+  return `${d}/${m}/${y.slice(2)}`;
+};
+
+/** Ticket details from the Build a Ticket form */
+const ticketData = (t: TestTicket): TicketData => {
+  const start = formatDate(t.startDate);
+  const end = formatDate(t.endDate);
+  return {
+    description: t.description,
+    unit: t.unit,
+    price: parseFloat(t.price) || 0,
+    was: parseFloat(t.was) || 0,
+    qty: parseInt(t.deal, 10) || 0,
+    footer: start || end ? `Available ${start ? `from ${start} ` : ''}${end ? `until ${end}` : ''}` : 'Available while stocks last',
+  };
+};
 
 const downloadFile = (name: string, content: string, type: string) => {
   const url = URL.createObjectURL(new Blob([content], { type }));
@@ -68,31 +93,51 @@ const ICONS: Record<string, React.ReactNode> = {
   truck: <path d="M1 4h14v11H1zm14 4h4l3 3v4h-7zM5.5 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm13 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" />,
 };
 
-const FontLayoutStep: React.FC<FontLayoutStepProps> = ({ value, onChange, promo, onBack, onNext, onOrderStock }) => {
+const FontLayoutStep: React.FC<FontLayoutStepProps> = ({ value: saved, onChange, everyday, promo, brand, onBack, onNext, nextLabel, onOrderStock }) => {
+  // Older saved state may not have the newer fields
+  const value: FontSetup = {
+    ...saved,
+    layouts: saved.layouts ?? {},
+    layoutsChosen: saved.layoutsChosen ?? [],
+    ticket: { ...saved.ticket, was: saved.ticket.was ?? '45' },
+  };
   const [previewOpen, setPreviewOpen] = useState(false);
   const [showErrors, setShowErrors] = useState(false);
+  const [activeKey, setActiveKey] = useState('everyday');
   const fontRef = useRef<HTMLElement>(null);
   const layoutRef = useRef<HTMLElement>(null);
   const font = TICKET_FONTS[value.fontIndex];
-  const layout = TEXT_LAYOUTS[value.layoutIndex];
-  const promoHeader = promo.headers[0] ?? PROMO_HEADERS[0];
+
+  const tickets = paperTickets(brand, everyday, promo);
+  const active = tickets.find((t) => t.key === activeKey) ?? tickets[0];
+  const layoutOf = (t: PaperTicketDef) => value.layouts[t.key] ?? t.recommended;
+  const chosen = (t: PaperTicketDef) => value.layoutsChosen.includes(t.key);
+  const missing = tickets.filter((t) => !chosen(t));
 
   const set = (patch: Partial<FontSetup>) => onChange({ ...value, ...patch });
   const setTicket = (key: keyof TestTicket, v: string) => set({ ticket: { ...value.ticket, [key]: v } });
 
-  const testTicket = (
-    <TicketPreview
-      layout={layout}
-      fontFamily={font.family}
-      header={value.ticket.offer}
-      colour1={promo.colour1}
-      colour2={promo.colour2}
-      ticket={value.ticket}
-    />
+  // Sliding to another layout un-ticks it, like the other carousels
+  const moveLayout = (t: PaperTicketDef, layout: TicketLayoutId) =>
+    set({ layouts: { ...value.layouts, [t.key]: layout }, layoutsChosen: value.layoutsChosen.filter((k) => k !== t.key) });
+  const tickLayout = (t: PaperTicketDef) =>
+    set({ layouts: { ...value.layouts, [t.key]: layoutOf(t) }, layoutsChosen: chosen(t) ? value.layoutsChosen.filter((k) => k !== t.key) : [...value.layoutsChosen, t.key] });
+
+  const ticketFor = (t: PaperTicketDef, o: Orientation, data: TicketData, layout = layoutOf(t), fill = false) => (
+    <PaperTicket bg={t.bg(o)} orientation={o} layout={layout} data={data} fontFamily={font.family} fill={fill} />
   );
 
+  const testData = ticketData(value.ticket);
+  const testTicket = ticketFor(active, 'portrait', testData);
+
+  const errorText = !value.fontChosen
+    ? 'Tick the circle under a font to choose it.'
+    : missing.length
+      ? `Tick a text layout for ${missing.map((t) => t.name).join(', ')}.`
+      : '';
+
   const handleNext = () => {
-    if (!value.fontChosen || !value.layoutChosen) {
+    if (errorText) {
       setShowErrors(true);
       (value.fontChosen ? layoutRef : fontRef).current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       return;
@@ -100,11 +145,13 @@ const FontLayoutStep: React.FC<FontLayoutStepProps> = ({ value, onChange, promo,
     onNext();
   };
 
+  const layoutIndex = active.layouts.indexOf(layoutOf(active));
+
   return (
     <div className={card.card}>
       <div className={card.titleBar}>
         <h2 className={card.headline}>Select your font and text layout</h2>
-        <p className={card.subline}>Pick a Google font and layout, then build a test ticket</p>
+        <p className={card.subline}>Pick a Google font, choose how the text sits on each ticket, then build a test ticket</p>
       </div>
 
       <section className={card.section} ref={fontRef}>
@@ -141,34 +188,48 @@ const FontLayoutStep: React.FC<FontLayoutStepProps> = ({ value, onChange, promo,
       </section>
 
       <section className={card.section} ref={layoutRef}>
-        <h3 className={card.sectionTitle}>Pick a text layout</h3>
-        <Carousel
-          items={TEXT_LAYOUTS}
-          index={value.layoutIndex}
-          onIndexChange={(layoutIndex) => set({ layoutIndex, layoutChosen: false })}
-          selected={value.layoutChosen}
-          onSelect={() => set({ layoutChosen: !value.layoutChosen })}
-          label="text layout"
-          height={300}
-          renderItem={(l) => (
-            <TicketPreview
-              layout={l}
-              fontFamily={LAYOUT_PREVIEW_FONT}
-              header={l === 'variable' || l === 'variableWhite' ? 'Variable' : promoHeader}
-              colour1={promo.colour1}
-              colour2={promo.colour2}
-              ticket={{ ...SAMPLE_TICKET, description: 'Description of product', deal: '2 for', price: '24.95', unit: '$25.95 Each' }}
-            />
-          )}
+        <h3 className={card.sectionTitle}>Pick a text layout for each ticket</h3>
+        <p className={card.sectionIntro}>
+          The layout decides where the product, price and offer sit. Each ticket is shown on the background you picked in the earlier steps.
+        </p>
+        <TicketTabs
+          tickets={tickets.map((t) => ({ key: t.key, name: t.name, promo: !!t.promoType, ticked: chosen(t) }))}
+          activeKey={active.key}
+          onChange={setActiveKey}
         />
-        {showErrors && (!value.fontChosen || !value.layoutChosen) && (
-          <p className={form.error}>Tick the circle under a font and a text layout to choose them.</p>
-        )}
+        <Carousel
+          key={active.key}
+          items={active.layouts}
+          index={Math.max(0, layoutIndex)}
+          onIndexChange={(i) => moveLayout(active, active.layouts[i])}
+          selected={chosen(active)}
+          onSelect={() => tickLayout(active)}
+          label={`${active.name} text layout`}
+          height={300}
+          renderItem={(l) => ticketFor(active, 'portrait', SAMPLE_DATA, l)}
+        />
+        <p className={styles.layoutCaption}>
+          <strong>{TICKET_LAYOUTS[layoutOf(active)].name}</strong>
+          {layoutOf(active) === active.recommended && active.promoType && ' · Recommended'}. {TICKET_LAYOUTS[layoutOf(active)].description}
+        </p>
+        <div className={styles.orientations}>
+          <figure>
+            <div className={styles.orientPortrait}>{ticketFor(active, 'portrait', SAMPLE_DATA)}</div>
+            <figcaption>Portrait</figcaption>
+          </figure>
+          <figure>
+            <div className={styles.orientLandscape}>{ticketFor(active, 'landscape', SAMPLE_DATA)}</div>
+            <figcaption>Landscape</figcaption>
+          </figure>
+        </div>
+        {showErrors && errorText && value.fontChosen && <p className={form.error}>{errorText}</p>}
       </section>
 
       <section className={card.section}>
         <h3 className={card.sectionTitle}>Build a Ticket</h3>
-        <p className={card.sectionIntro}>In-store price tickets sorted. Try your choices on a real ticket.</p>
+        <p className={card.sectionIntro}>
+          Try your {active.name} ticket with a real product. Switch tickets with the tabs above.
+        </p>
         <div className={styles.builder}>
           <div className={styles.builderForm}>
             {TICKET_FIELDS.map((f) => (
@@ -206,7 +267,10 @@ const FontLayoutStep: React.FC<FontLayoutStepProps> = ({ value, onChange, promo,
               </button>
             </div>
           </div>
-          <div className={`${styles.builderPreview} ${styles.printArea}`}>{testTicket}</div>
+          <div className={`${styles.builderPreview} ${styles.printArea}`}>
+            <div className={styles.builderPortrait}>{testTicket}</div>
+            <div className={styles.builderLandscape}>{ticketFor(active, 'landscape', testData)}</div>
+          </div>
         </div>
       </section>
 
@@ -249,13 +313,9 @@ const FontLayoutStep: React.FC<FontLayoutStepProps> = ({ value, onChange, promo,
 
       <StepFooter
         onBack={onBack}
-        nextLabel="Buy Printers & Paper"
+        nextLabel={nextLabel}
         onNext={handleNext}
-        error={
-          showErrors && (!value.fontChosen || !value.layoutChosen)
-            ? 'Tick the circle under a font and a text layout to choose them.'
-            : ''
-        }
+        error={showErrors ? errorText : ''}
       />
 
       {previewOpen && (

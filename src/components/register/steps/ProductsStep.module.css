@@ -1,0 +1,257 @@
+.method {
+  padding: var(--pad);
+}
+
+.methodArt {
+  width: 100%;
+  height: 130px;
+  padding: 8px;
+  border-radius: 6px;
+  background: radial-gradient(circle at 50% 40%, #ffffff 0%, #fdeef4 100%);
+}
+
+.panel {
+  padding: var(--pad);
+  border-radius: 8px;
+  background-color: #f8f9fb;
+  border: 1px solid var(--field-border);
+  animation: open 0.3s ease;
+}
+
+@keyframes open {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Numbered spreadsheet steps */
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pad);
+}
+
+.steps li {
+  display: flex;
+  gap: var(--field-gap);
+  color: var(--secondary);
+}
+
+.steps strong {
+  display: block;
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.steps p {
+  margin-bottom: 10px;
+}
+
+.num {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  color: #ffffff;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.grow {
+  flex: 1;
+  min-width: 0;
+}
+
+.sample {
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+.action {
+  margin-top: var(--field-gap);
+}
+
+.working {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 12px var(--field-gap);
+  border-radius: 8px;
+  background-color: #ffffff;
+  border: 1px solid var(--field-border);
+}
+
+.workingText {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--secondary);
+}
+
+/* Retail systems */
+.systems {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--field-gap);
+  margin-bottom: var(--field-gap);
+}
+
+.system {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 64px;
+  padding: 0 14px;
+  border: 1px solid var(--field-border);
+  border-radius: 8px;
+  background: #ffffff;
+  font-size: 15px;
+  font-weight: bold;
+  color: var(--secondary);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.system:hover {
+  border-color: #f6bfd6;
+}
+
+.systemOn,
+.systemOn:hover {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary);
+}
+
+.systemMark {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.connect {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.connectForm {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--field-gap);
+  flex-wrap: wrap;
+}
+
+.connectForm > div {
+  flex: 1;
+  min-width: 240px;
+  margin-bottom: 0;
+}
+
+.after {
+  margin-top: 10px;
+}
+
+.showcase {
+  margin-top: var(--field-gap);
+}
+
+.later {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--field-gap);
+  padding: var(--field-gap);
+  border-radius: 8px;
+  border: 1px dashed var(--primary);
+  color: var(--secondary);
+}
+
+.later strong {
+  font-size: 16px;
+}
+
+/* Save confirmation */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-md);
+  background-color: rgba(43, 37, 62, 0.75);
+}
+
+.modalCard {
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 32px 24px 24px;
+  border-radius: 8px;
+  background: #ffffff;
+  text-align: center;
+  color: var(--secondary);
+  animation: open 0.3s ease;
+}
+
+.modalCard h3 {
+  font-size: 22px;
+}
+
+.modalCard p {
+  font-size: 15px;
+  color: var(--content-light);
+}
+
+.modalTick {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modalActions {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--field-gap);
+  margin-top: 8px;
+}
+
+@media (max-width: 860px) {
+  .systems {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .later {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.later button {
+  flex-shrink: 0;
+  white-space: nowrap;
+}

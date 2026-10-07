@@ -92,11 +92,75 @@ export const RETAIL_CATEGORIES = [
 export const EVERYDAY_HEADERS = ['Everyday Value', 'Save Everyday', 'Core Range', 'Great Price'];
 export const PROMO_HEADERS = ['Special', 'Promotion', 'Save', 'New', 'Super Sale'];
 
+export type PromoTypeId = 'special' | 'sale' | 'clearout' | 'multibuy' | 'new' | 'members';
+
+/** Kinds of promotion; each gets its own ticket design. `style` is the recommended PROMO_STYLES index. */
+export const PROMO_TYPES: { id: PromoTypeId; name: string; header: string; description: string; style: number }[] = [
+  { id: 'special', name: 'Special Price', header: 'Special', description: 'A lower price for a limited time, with the saving.', style: 0 },
+  { id: 'sale', name: 'Sale', header: 'Sale', description: 'A sale event, such as a seasonal or store-wide sale.', style: 4 },
+  { id: 'clearout', name: 'Clear Out', header: 'Clear Out', description: 'Clearance price with the was price, to move old stock.', style: 3 },
+  { id: 'multibuy', name: 'Buy More & Save', header: 'Buy More & Save', description: 'A multi-buy offer, such as 2 for $6.98.', style: 0 },
+  { id: 'new', name: 'New', header: 'New', description: 'A new product launch, with or without a discount.', style: 2 },
+  { id: 'members', name: 'Members Deal', header: 'Members Deal', description: 'A member price and a non-member price.', style: 1 },
+];
+
 /** Textures for the Everyday (core) backgrounds */
 export const CORE_TEXTURES = [1, 2, 3, 4, 5, 6].map((i) => `/images/backgrounds/core-bg${i}.png`);
 
 export const PROMO_STYLES = ['classic', 'gold', 'slant', 'frame', 'sale'] as const;
+
+/** Foodvilla artwork supplied by the client, offered as sample uploads */
+export const FOODVILLA_ART = {
+  paper: { name: 'Foodvilla A5 ticket template.jpg', url: '/images/foodvilla/paper-a5.jpg' },
+  /** Foodvilla's paper templates are all portrait, so the landscape sample is their landscape screen artwork */
+  paperLandscape: { name: 'Foodvilla landscape ticket artwork.jpg', url: '/images/foodvilla/screen-landscape.jpg' },
+  /** Foodvilla artwork for each promotion type, at /images/foodvilla/promo/<type>-<orientation>.jpg */
+  promo: (type: string, orientation: 'portrait' | 'landscape') => ({
+    name: `Foodvilla ${type} ${orientation}.jpg`,
+    url: `/images/foodvilla/promo/${type}-${orientation}.jpg`,
+  }),
+  screen: {
+    name: 'Foodvilla digital screen artwork.jpg',
+    landscape: '/images/foodvilla/screen-landscape.jpg',
+    portrait: '/images/foodvilla/screen-portrait.jpg',
+  },
+};
 export type PromoStyle = (typeof PROMO_STYLES)[number];
+
+/** Names of the background designs, in carousel order */
+export const STYLE_NAMES = {
+  everyday: ['Damask', 'Pink stripes', 'Plain', 'Concrete', 'White brick', 'Kraft paper'],
+  promo: ['Classic', 'Gold', 'Slant', 'Frame', 'Super sale'],
+};
+
+/** Words in the AI prompt that point to each background design */
+export const STYLE_KEYWORDS = {
+  everyday: [
+    ['damask', 'pattern', 'elegant', 'floral'],
+    ['stripe', 'pink', 'candy', 'fun'],
+    ['plain', 'clean', 'simple', 'minimal', 'white'],
+    ['concrete', 'stone', 'grey', 'gray', 'industrial', 'marble'],
+    ['brick', 'wall', 'rustic', 'urban'],
+    ['kraft', 'paper', 'natural', 'organic', 'eco', 'brown', 'farm'],
+  ],
+  promo: [
+    ['classic', 'simple', 'clean', 'bright'],
+    ['gold', 'premium', 'luxury', 'black', 'elegant'],
+    ['slant', 'modern', 'dynamic', 'fresh', 'angle'],
+    ['frame', 'border', 'bold'],
+    ['sunburst', 'super', 'big'],
+  ],
+};
+
+/** Words in the AI prompt that point to each promotion type */
+export const TYPE_KEYWORDS: Record<PromoTypeId, string[]> = {
+  special: ['special'],
+  sale: ['sale'],
+  clearout: ['clear', 'clearance'],
+  multibuy: ['multi', 'buy more', '2 for', 'bundle'],
+  new: ['new', 'launch'],
+  members: ['member', 'loyalty', 'club'],
+};
 
 /* ---------- Step 5: font, layout and test ticket ---------- */
 
@@ -108,6 +172,8 @@ export interface TestTicket {
   description: string;
   deal: string;
   price: string;
+  /** Regular price, used for savings, was prices and member deals */
+  was: string;
   unit: string;
   startDate: string;
   endDate: string;
@@ -118,9 +184,37 @@ export const SAMPLE_TICKET: TestTicket = {
   description: 'Kosciuszko Pale Ale Stubbies 330mL',
   deal: '3 for',
   price: '36',
+  was: '45',
   unit: 'x 24 Pack',
   startDate: '',
   endDate: '',
+};
+
+/** Text layouts: how the product, price and offer sit on a ticket background */
+export type TicketLayoutId = 'standard' | 'feature' | 'multibuy' | 'save' | 'percent' | 'wasnow' | 'members' | 'new';
+
+export const TICKET_LAYOUTS: Record<TicketLayoutId, { name: string; description: string }> = {
+  standard: { name: 'Price focus', description: 'Product name, big price and unit price.' },
+  feature: { name: 'Product details', description: 'Product name, three detail lines and price.' },
+  multibuy: { name: 'Multi-buy', description: 'Deal such as 3 for $36, with the price.' },
+  save: { name: 'Price and saving', description: 'Offer price with the saving underneath.' },
+  percent: { name: 'Percent off', description: 'Percentage off above the offer price.' },
+  wasnow: { name: 'Was and now', description: 'Offer price with the was price.' },
+  members: { name: 'Member price', description: 'Member price and non-member price.' },
+  new: { name: 'New product', description: 'New badge above the price.' },
+};
+
+export const EVERYDAY_LAYOUTS: TicketLayoutId[] = ['standard', 'feature', 'multibuy'];
+export const PROMO_LAYOUTS: TicketLayoutId[] = ['save', 'percent', 'wasnow', 'multibuy', 'members', 'new', 'standard'];
+
+/** Layout recommended for each promotion type */
+export const PROMO_TYPE_LAYOUT: Record<PromoTypeId, TicketLayoutId> = {
+  special: 'save',
+  sale: 'percent',
+  clearout: 'wasnow',
+  multibuy: 'multibuy',
+  new: 'new',
+  members: 'members',
 };
 
 export const DOWNLOADS = [
@@ -177,6 +271,15 @@ export const PRINTERS: Printer[] = [
 ];
 
 export const PAPER_PRODUCTS = ['p-a4', 'p-a5', 'p-9up', 't-4up', 'e-20up'];
+
+/** Demonstration price per box of 500 perforated sheets */
+export const PAPER_BOX_PRICE: Record<string, number> = {
+  'p-a4': 39.9,
+  'p-a5': 42.9,
+  'p-9up': 54.9,
+  't-4up': 49.9,
+  'e-20up': 59.9,
+};
 
 export const PAPER_COLOURS = [
   '#f7ef8a', '#f2b56b', '#f6eda0', '#dc3238', '#f7f1d8', '#f7f13a', '#f7901e', '#f9d84a', '#c3f0ae',

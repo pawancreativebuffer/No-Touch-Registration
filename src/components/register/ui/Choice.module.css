@@ -1,0 +1,347 @@
+/* Shared pieces for the solution, ESL, screen, order and go-live steps */
+
+/* Selectable card (same look as the print size cards) */
+.option {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: var(--field-gap);
+  border: 1px solid var(--field-border);
+  border-radius: 8px;
+  background: #ffffff;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.option:hover {
+  border-color: #f6bfd6;
+}
+
+.selected,
+.selected:hover {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: var(--field-gap);
+}
+
+.grid3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--field-gap);
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--field-gap);
+}
+
+/* Device preview area inside a card */
+.stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 150px;
+  padding: 12px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #f6f7f9, #eceef2);
+}
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cardTitle {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  min-width: 0;
+}
+
+.cardTitle strong {
+  font-size: 16px;
+  color: var(--secondary);
+}
+
+.cardTitle small,
+.muted {
+  font-size: 13px;
+  color: var(--content-light);
+}
+
+.cardFoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.price {
+  font-size: 15px;
+  font-weight: bold;
+  color: var(--secondary);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background-color: #fdeef4;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.badgeGreen {
+  background-color: #e5f5eb;
+  color: #2f8a52;
+}
+
+/* Pink information strip (same as "Require a custom size?") */
+.note {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+  padding: 12px var(--field-gap);
+  border-radius: 8px;
+  background-color: #fdeef4;
+  color: var(--secondary);
+  font-size: 14px;
+}
+
+/* Segmented toggle, e.g. Everyday / Promotional */
+.segmented {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 6px;
+  background-color: #f1f2f5;
+  gap: 2px;
+  flex-wrap: wrap;
+}
+
+.segmented button {
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 4px;
+  font-size: 14px;
+  color: var(--secondary);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.segmented button:hover {
+  color: var(--primary);
+}
+
+.segmented .on,
+.segmented .on:hover {
+  background-color: #ffffff;
+  color: var(--primary);
+  font-weight: bold;
+  box-shadow: 0 1px 3px rgba(43, 37, 62, 0.15);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--field-gap);
+  flex-wrap: wrap;
+  margin-bottom: var(--field-gap);
+}
+
+/* Line item table used on purchase and order steps */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  color: var(--secondary);
+}
+
+.table th,
+.table td {
+  padding: 10px;
+  border-bottom: 1px solid var(--field-border);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.table th {
+  background-color: #f3f4f6;
+  font-weight: bold;
+  border-bottom: none;
+}
+
+.table th:not(:first-child),
+.table td:not(:first-child) {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.table td small {
+  display: block;
+  font-size: 12px;
+  color: var(--content-light);
+}
+
+.table tfoot td {
+  font-weight: bold;
+  border-bottom: none;
+}
+
+/* Accessory row: picture, text, quantity and total */
+.item {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr) auto 110px;
+  align-items: center;
+  gap: var(--field-gap);
+  padding: 12px 0;
+  border-bottom: 1px solid var(--field-border);
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+.itemArt {
+  width: 120px;
+  height: 84px;
+  padding: 6px;
+  border-radius: 6px;
+  background-color: #f6f7f9;
+}
+
+.itemText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 14px;
+  color: var(--secondary);
+}
+
+.itemText strong {
+  font-size: 15px;
+}
+
+.itemText small {
+  font-size: 13px;
+  color: var(--content-light);
+}
+
+.itemTotal {
+  text-align: right;
+  font-size: 15px;
+  font-weight: bold;
+  color: var(--secondary);
+}
+
+.subtotal {
+  display: flex;
+  justify-content: flex-end;
+  align-items: baseline;
+  gap: var(--field-gap);
+  padding-top: 12px;
+  font-size: 15px;
+  color: var(--secondary);
+}
+
+.subtotal strong {
+  font-size: 20px;
+}
+
+/* Small spinner for simulated work */
+.spinner {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 3px solid #f6bfd6;
+  border-top-color: var(--primary);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.progress {
+  height: 8px;
+  border-radius: 4px;
+  background-color: #f1f2f5;
+  overflow: hidden;
+}
+
+.progress span {
+  display: block;
+  height: 100%;
+  background-color: var(--primary);
+  animation: fill 1.6s ease forwards;
+}
+
+@keyframes fill {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+.success {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px var(--field-gap);
+  border-radius: 8px;
+  background-color: #e5f5eb;
+  color: #2f6b45;
+  font-size: 14px;
+}
+
+.success svg {
+  flex-shrink: 0;
+  color: #2f8a52;
+}
+
+/* Inline buttons that size to their text */
+.inlineButton.inlineButton {
+  width: auto;
+  min-width: 180px;
+}
+
+@media (max-width: 860px) {
+  .grid3,
+  .grid2 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .item {
+    grid-template-columns: 80px minmax(0, 1fr);
+  }
+
+  .itemArt {
+    width: 80px;
+    height: 60px;
+  }
+
+  .item > :nth-child(3),
+  .item > :nth-child(4) {
+    grid-column: 2;
+    justify-self: start;
+    text-align: left;
+  }
+}

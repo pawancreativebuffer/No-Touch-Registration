@@ -1,0 +1,69 @@
+.options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--pad);
+}
+
+.options p {
+  margin-top: 6px;
+}
+
+.screenTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: var(--field-gap);
+}
+
+.screenTab {
+  height: 32px;
+  padding: 0 12px;
+  border: 1px dashed var(--field-border);
+  border-radius: 5px;
+  background: #ffffff;
+  font-size: 13px;
+  color: var(--secondary);
+}
+
+.screenTab:hover {
+  border-color: var(--primary);
+}
+
+.screenTabOn,
+.screenTabOn:hover {
+  border-style: solid;
+  border-color: var(--primary);
+  color: var(--primary);
+  font-weight: bold;
+}
+
+/* Store-like backdrop behind the screen */
+.previewStage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  padding: 32px var(--pad);
+  border-radius: 8px;
+  background: radial-gradient(ellipse at 50% 30%, #4a4458 0%, #2b253e 70%);
+}
+
+.caption {
+  margin-top: 8px;
+  text-align: center;
+}
+
+@media (max-width: 860px) {
+  .options {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.uploadNote {
+  padding: var(--field-gap);
+  border: 1px dashed var(--field-border);
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--content-light);
+  text-align: center;
+}

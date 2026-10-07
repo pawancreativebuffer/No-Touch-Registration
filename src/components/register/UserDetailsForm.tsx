@@ -36,9 +36,10 @@ interface UserDetailsFormProps {
   onChange: (values: UserDetails) => void;
   onCancel: () => void;
   onNext: () => void;
+  nextLabel: string;
 }
 
-const UserDetailsForm: React.FC<UserDetailsFormProps> = ({ values, onChange, onCancel, onNext }) => {
+const UserDetailsForm: React.FC<UserDetailsFormProps> = ({ values, onChange, onCancel, onNext, nextLabel }) => {
   const [touched, setTouched] = useState<Partial<Record<keyof UserDetails, boolean>>>({});
   const [submitted, setSubmitted] = useState(false);
   const errors = validate(values);
@@ -152,7 +153,7 @@ const UserDetailsForm: React.FC<UserDetailsFormProps> = ({ values, onChange, onC
       <StepFooter
         backLabel="Cancel"
         onBack={onCancel}
-        nextLabel="Select your Standard ticket sizes"
+        nextLabel={nextLabel}
         error={submitted && Object.keys(errors).length > 0 ? 'Please fix the highlighted fields above.' : ''}
       />
     </form>

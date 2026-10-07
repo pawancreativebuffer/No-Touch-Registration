@@ -176,3 +176,10 @@
   color: #111111;
   font-style: italic;
 }
+
+/* Stretch into a ticket size with a different shape */
+.ticket.fill {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+}

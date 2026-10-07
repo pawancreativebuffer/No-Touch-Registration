@@ -1,46 +1,60 @@
 import React from 'react';
+import { WizardStep } from './flow';
 import styles from './Stepper.module.css';
 
 interface StepperProps {
-  steps: string[];
+  steps: WizardStep[];
   current: number;
+  /** Furthest step reached; any step up to it can be revisited */
+  furthest: number;
   onStepClick?: (index: number) => void;
 }
 
-const Stepper: React.FC<StepperProps> = ({ steps, current, onStepClick }) => {
+/** Vertical progress list of every step in the current flow */
+const Stepper: React.FC<StepperProps> = ({ steps, current, furthest, onStepClick }) => {
   const progress = steps.length > 1 ? (current / (steps.length - 1)) * 100 : 0;
 
   return (
-    <div className={styles.stepper} style={{ '--count': steps.length } as React.CSSProperties}>
-      <div className={styles.track}>
-        <div className={styles.fill} style={{ width: `${progress}%` }} />
+    <nav className={styles.stepper} aria-label="Signup progress">
+      <div className={styles.summary}>
+        <span>
+          Step {current + 1} of {steps.length}
+        </span>
+        <strong>{steps[current]?.label}</strong>
+        <div className={styles.bar}>
+          <div className={styles.fill} style={{ width: `${progress}%` }} />
+        </div>
       </div>
+
       <ol className={styles.steps}>
-        {steps.map((label, index) => {
-          const state = index < current ? styles.done : index === current ? styles.current : '';
-          const clickable = index < current && onStepClick;
+        {steps.map((step, index) => {
+          const state = index < current ? styles.done : index === current ? styles.current : index <= furthest ? styles.visited : '';
+          const clickable = index !== current && index <= furthest && onStepClick;
           return (
-            <li key={label} className={`${styles.step} ${state}`}>
+            <li key={step.id} className={`${styles.step} ${state}`}>
               <button
                 type="button"
-                className={styles.dot}
+                className={styles.button}
                 disabled={!clickable}
                 onClick={() => clickable && onStepClick(index)}
-                aria-label={label}
                 aria-current={index === current ? 'step' : undefined}
               >
-                {index < current && (
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                  </svg>
-                )}
+                <span className={styles.dot}>
+                  {index < current ? (
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                  ) : (
+                    index + 1
+                  )}
+                </span>
+                <span className={styles.label}>{step.label}</span>
               </button>
-              <span className={styles.label}>{label}</span>
             </li>
           );
         })}
       </ol>
-    </div>
+    </nav>
   );
 };
 

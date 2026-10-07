@@ -11,6 +11,8 @@ interface TicketBackgroundProps {
   colour1: string;
   colour2: string;
   logoUrl?: string;
+  /** Fill the parent box instead of keeping the A-size shape (used for other ticket sizes) */
+  fill?: boolean;
   children?: React.ReactNode;
 }
 
@@ -26,6 +28,7 @@ const TicketBackground: React.FC<TicketBackgroundProps> = ({
   colour1,
   colour2,
   logoUrl,
+  fill,
   children,
 }) => {
   const style = kind === 'promo' ? PROMO_STYLES[variant % PROMO_STYLES.length] : 'core';
@@ -38,7 +41,7 @@ const TicketBackground: React.FC<TicketBackgroundProps> = ({
   } as React.CSSProperties;
 
   return (
-    <div className={`${styles.ticket} ${styles[orientation]} ${styles[style]}`} style={vars}>
+    <div className={`${styles.ticket} ${styles[orientation]} ${styles[style]} ${fill ? styles.fill : ''}`} style={vars}>
       <div className={styles.header}>
         <span className={styles.headerText}>{header}</span>
       </div>

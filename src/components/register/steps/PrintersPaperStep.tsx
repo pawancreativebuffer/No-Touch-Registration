@@ -7,14 +7,15 @@ import styles from './PrintersPaperStep.module.css';
 import CheckCircle from '../ui/CheckCircle';
 import SheetPreview from '../ui/SheetPreview';
 import StepFooter from '../ui/StepFooter';
-import { findSize, money, PAPER_COLOURS, PAPER_PRODUCTS, Printer, PRINTERS } from '../data';
+import { findSize, money, PAPER_BOX_PRICE, PAPER_COLOURS, PAPER_PRODUCTS, Printer, PRINTERS } from '../data';
 import { PurchaseSetup } from '../state';
 
 interface PrintersPaperStepProps {
   value: PurchaseSetup;
   onChange: (value: PurchaseSetup) => void;
   onBack: () => void;
-  onFinish: () => void;
+  onNext: () => void;
+  nextLabel: string;
 }
 
 const PrinterArt: React.FC<{ kind: Printer['kind'] }> = ({ kind }) => (
@@ -34,7 +35,7 @@ const PrinterArt: React.FC<{ kind: Printer['kind'] }> = ({ kind }) => (
   </svg>
 );
 
-const PrintersPaperStep: React.FC<PrintersPaperStepProps> = ({ value, onChange, onBack, onFinish }) => {
+const PrintersPaperStep: React.FC<PrintersPaperStepProps> = ({ value, onChange, onBack, onNext, nextLabel }) => {
   // Colour and quantity chosen on each paper row before it is added to the cart
   const [paperColour, setPaperColour] = useState<Record<string, string>>({});
   const [paperQty, setPaperQty] = useState<Record<string, number>>({});
@@ -214,6 +215,7 @@ const PrintersPaperStep: React.FC<PrintersPaperStepProps> = ({ value, onChange, 
                       </span>
                       <span className={form.buttonText}>Add to cart</span>
                     </button>
+                    <span className={styles.boxPrice}>{money(PAPER_BOX_PRICE[sizeId] ?? 0)} per box of 500</span>
                   </div>
                 </div>
               </li>
@@ -263,7 +265,7 @@ const PrintersPaperStep: React.FC<PrintersPaperStepProps> = ({ value, onChange, 
         )}
       </section>
 
-      <StepFooter onBack={onBack} nextLabel="Finish & Login" onNext={onFinish} />
+      <StepFooter onBack={onBack} nextLabel={nextLabel} onNext={onNext} />
     </div>
   );
 };
