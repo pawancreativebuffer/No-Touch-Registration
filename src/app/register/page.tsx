@@ -1,6 +1,6 @@
 import React from 'react';
 import Header from '@/components/Header';
-import RegisterWizard from '@/components/register/RegisterWizard';
+import Hub from '@/components/hub/Hub';
 import styles from '../page.module.css';
 
 export default function RegisterPage() {
@@ -8,7 +8,7 @@ export default function RegisterPage() {
     <main className={styles.page}>
       <Header />
       <section className={styles.registerArea}>
-        <RegisterWizard />
+        <Hub />
       </section>
     </main>
   );

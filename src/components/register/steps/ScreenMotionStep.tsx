@@ -24,13 +24,15 @@ interface ScreenMotionStepProps {
   onBack: () => void;
   onNext: () => void;
   nextLabel: string;
+  /** Font chosen once in Brand, Colours & Fonts; hides the font picker */
+  brandFontIndex?: number;
 }
 
 const CAROUSEL_HEIGHT = 220;
 const PREVIEW_HEIGHT: Record<ScreenModel['shape'], number> = { bar: 160, wide: 340, portrait: 520 };
 
 /** Font, a text layout per ticket, motion and Multi Product, previewed on each chosen screen. Laid out like the ESL font step. */
-const ScreenMotionStep: React.FC<ScreenMotionStepProps> = ({ value: saved, onChange, brand, onBack, onNext, nextLabel }) => {
+const ScreenMotionStep: React.FC<ScreenMotionStepProps> = ({ value: saved, onChange, brand, onBack, onNext, nextLabel, brandFontIndex }) => {
   // Older saved state may not have the newer fields
   const value: ScreenSetup = {
     ...saved,
@@ -46,7 +48,9 @@ const ScreenMotionStep: React.FC<ScreenMotionStepProps> = ({ value: saved, onCha
   const layoutRef = useRef<HTMLElement>(null);
   const set = (patch: Partial<ScreenSetup>) => onChange({ ...value, ...patch });
 
-  const font = TICKET_FONTS[value.fontIndex];
+  const fromBrand = brandFontIndex !== undefined;
+  const font = TICKET_FONTS[fromBrand ? brandFontIndex : value.fontIndex];
+  const fontChosen = fromBrand || value.fontChosen;
   const lines = selectedScreens(value);
   const models = lines.length ? lines.map((l) => l.model) : [findScreen('zkl290')!];
   const designModel = models.find((m) => m.shape !== 'bar') ?? models[0];
@@ -106,7 +110,7 @@ const ScreenMotionStep: React.FC<ScreenMotionStepProps> = ({ value: saved, onCha
     </div>
   );
 
-  const errorText = !value.fontChosen
+  const errorText = !fontChosen
     ? 'Tick the circle under a font to choose it.'
     : missing.length
       ? `Tick a text layout for ${missing.map((t) => t.name).join(', ')}.`
@@ -115,7 +119,7 @@ const ScreenMotionStep: React.FC<ScreenMotionStepProps> = ({ value: saved, onCha
   const handleNext = () => {
     if (errorText) {
       setShowErrors(true);
-      (value.fontChosen ? layoutRef : fontRef).current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      (fontChosen ? layoutRef : fontRef).current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       return;
     }
     onNext();
@@ -124,26 +128,28 @@ const ScreenMotionStep: React.FC<ScreenMotionStepProps> = ({ value: saved, onCha
   return (
     <div className={card.card}>
       <div className={card.titleBar}>
-        <h2 className={card.headline}>Select your screen font and text layout</h2>
-        <p className={card.subline}>Pick a font, choose how the text sits on each screen design, then how your content moves</p>
+        <h2 className={card.headline}>{fromBrand ? 'Select your screen text layout' : 'Select your screen font and text layout'}</h2>
+        <p className={card.subline}>{fromBrand ? 'Choose how the text sits on each screen design and how your content moves. The font comes from your brand.' : 'Pick a font, choose how the text sits on each screen design, then how your content moves'}</p>
       </div>
 
-      <section className={card.section} ref={fontRef}>
-        <h3 className={card.sectionTitle}>Pick a Google Font</h3>
-        <Carousel
-          items={TICKET_FONTS}
-          index={value.fontIndex}
-          onIndexChange={(fontIndex) => set({ fontIndex, fontChosen: false })}
-          selected={value.fontChosen}
-          onSelect={() => set({ fontChosen: !value.fontChosen })}
-          label="screen font"
-          height={CAROUSEL_HEIGHT}
-          renderItem={(f) => screen(designModel, { ...tickets[0], upload: undefined }, CAROUSEL_HEIGHT, { fontFamily: f.family, layout: 'product', maxWidth: 560 })}
-        />
-        <p className={tabsCss.layoutCaption}>
-          <strong>{font.name}</strong>. {value.fontChosen ? 'Font is chosen.' : 'Tick the circle to choose it.'}
-        </p>
-      </section>
+      {!fromBrand && (
+        <section className={card.section} ref={fontRef}>
+          <h3 className={card.sectionTitle}>Pick a Google Font</h3>
+          <Carousel
+            items={TICKET_FONTS}
+            index={value.fontIndex}
+            onIndexChange={(fontIndex) => set({ fontIndex, fontChosen: false })}
+            selected={value.fontChosen}
+            onSelect={() => set({ fontChosen: !value.fontChosen })}
+            label="screen font"
+            height={CAROUSEL_HEIGHT}
+            renderItem={(f) => screen(designModel, { ...tickets[0], upload: undefined }, CAROUSEL_HEIGHT, { fontFamily: f.family, layout: 'product', maxWidth: 560 })}
+          />
+          <p className={tabsCss.layoutCaption}>
+            <strong>{font.name}</strong>. {value.fontChosen ? 'Font is chosen.' : 'Tick the circle to choose it.'}
+          </p>
+        </section>
+      )}
 
       <section className={card.section} ref={layoutRef}>
         <h3 className={card.sectionTitle}>Pick a text layout for each ticket</h3>
@@ -176,7 +182,7 @@ const ScreenMotionStep: React.FC<ScreenMotionStepProps> = ({ value: saved, onCha
             </p>
           </>
         )}
-        {showErrors && errorText && value.fontChosen && <p className={form.error}>{errorText}</p>}
+        {showErrors && errorText && fontChosen && <p className={form.error}>{errorText}</p>}
       </section>
 
       <section className={card.section}>

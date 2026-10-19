@@ -13,7 +13,7 @@ npm install
 npm run dev
 ```
 
-Open <http://localhost:3000>. The login page loads first. Click **Register** to start the signup wizard at `/register`.
+Open <http://localhost:3000>. The login page loads first. Click **Register** to open the hub at `/register`: a ready-made ticket you can edit, print or save as PDF, with options to explore in any order. The previous step-by-step signup wizard is kept at `/register-classic`.
 
 | Command | What it does |
 |---|---|

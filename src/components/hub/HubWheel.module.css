@@ -1,0 +1,138 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: var(--spacing-md);
+  background-color: rgba(43, 37, 62, 0.8);
+  animation: fade 0.25s ease;
+}
+
+.wrap {
+  position: relative;
+  width: min(460px, 88vw, 70vh);
+  aspect-ratio: 1;
+}
+
+.wheel {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  animation: spinIn 0.45s cubic-bezier(0.2, 1.2, 0.4, 1);
+}
+
+.segment {
+  cursor: pointer;
+  outline: none;
+}
+
+.segment path {
+  fill: var(--seg);
+  transition: transform 0.2s ease, filter 0.2s ease;
+  transform-origin: 300px 300px;
+}
+
+.segment:hover path,
+.segment:focus-visible path {
+  transform: scale(1.04);
+  filter: brightness(1.08) drop-shadow(0 6px 10px rgba(0, 0, 0, 0.25));
+}
+
+.label {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  text-align: center;
+  color: #ffffff;
+  pointer-events: none;
+}
+
+.label strong {
+  max-width: 150px;
+  font-size: 20px;
+  line-height: 1.15;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+/* Subtitles wrap inside the segment instead of spilling over its edges */
+.label small {
+  max-width: 124px;
+  margin-top: 4px;
+  font-size: 14px;
+  opacity: 0.95;
+  line-height: 1.15;
+}
+
+.icon {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.icon svg {
+  width: 34px;
+  height: 34px;
+}
+
+/* Live ticket in the middle */
+.centre {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 33%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.25);
+}
+
+.close {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #ffffff;
+  font-size: 24px;
+  color: var(--secondary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.close:hover {
+  color: var(--primary);
+}
+
+.hint {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes spinIn {
+  from {
+    opacity: 0;
+    transform: rotate(-20deg) scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

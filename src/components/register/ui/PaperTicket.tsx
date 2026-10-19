@@ -104,7 +104,7 @@ const TicketText: React.FC<{ layout: TicketLayoutId; data: TicketData; fontFamil
           {desc}
         </>
       )}
-      <p className={styles.footer}>{data.footer}</p>
+      {data.footer && <p className={styles.footer}>{data.footer}</p>}
     </div>
   );
 };

@@ -23,10 +23,12 @@ interface EslFontStepProps {
   onBack: () => void;
   onNext: () => void;
   nextLabel: string;
+  /** Font chosen once in Brand, Colours & Fonts; hides the font picker */
+  brandFontIndex?: number;
 }
 
 /** Font and text layout for each ESL ticket, shown on the ESL designs and sizes the retailer chose */
-const EslFontStep: React.FC<EslFontStepProps> = ({ value: saved, onChange, brand, onBack, onNext, nextLabel }) => {
+const EslFontStep: React.FC<EslFontStepProps> = ({ value: saved, onChange, brand, onBack, onNext, nextLabel, brandFontIndex }) => {
   // Older saved state may not have the newer fields
   const value: EslSetup = { ...saved, layouts: saved.layouts ?? {}, layoutsChosen: saved.layoutsChosen ?? [], fontChosen: saved.fontChosen ?? false };
   const [showErrors, setShowErrors] = useState(false);
@@ -35,7 +37,9 @@ const EslFontStep: React.FC<EslFontStepProps> = ({ value: saved, onChange, brand
   const layoutRef = useRef<HTMLElement>(null);
   const set = (patch: Partial<EslSetup>) => onChange({ ...value, ...patch });
 
-  const font = TICKET_FONTS[value.fontIndex];
+  const fromBrand = brandFontIndex !== undefined;
+  const font = TICKET_FONTS[fromBrand ? brandFontIndex : value.fontIndex];
+  const fontChosen = fromBrand || value.fontChosen;
   const lines = selectedEsls(value);
   const models = lines.length ? lines.map((l) => l.model) : ESL_MODELS.slice(0, 3);
   const designModel = lines.find((l) => l.model.width >= 300)?.model ?? findEsl('zkc42q')!;
@@ -71,7 +75,7 @@ const EslFontStep: React.FC<EslFontStepProps> = ({ value: saved, onChange, brand
     </div>
   );
 
-  const errorText = !value.fontChosen
+  const errorText = !fontChosen
     ? 'Tick the circle under a font to choose it.'
     : missing.length
       ? `Tick a text layout for ${missing.map((t) => t.name).join(', ')}.`
@@ -80,7 +84,7 @@ const EslFontStep: React.FC<EslFontStepProps> = ({ value: saved, onChange, brand
   const handleNext = () => {
     if (errorText) {
       setShowErrors(true);
-      (value.fontChosen ? layoutRef : fontRef).current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      (fontChosen ? layoutRef : fontRef).current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       return;
     }
     onNext();
@@ -89,26 +93,28 @@ const EslFontStep: React.FC<EslFontStepProps> = ({ value: saved, onChange, brand
   return (
     <div className={card.card}>
       <div className={card.titleBar}>
-        <h2 className={card.headline}>Select your ESL font and text layout</h2>
-        <p className={card.subline}>Pick a font, then choose how the text sits on each ESL ticket</p>
+        <h2 className={card.headline}>{fromBrand ? 'Select your ESL text layout' : 'Select your ESL font and text layout'}</h2>
+        <p className={card.subline}>{fromBrand ? 'Choose how the text sits on each ESL ticket. The font comes from your brand.' : 'Pick a font, then choose how the text sits on each ESL ticket'}</p>
       </div>
 
-      <section className={card.section} ref={fontRef}>
-        <h3 className={card.sectionTitle}>Pick a Google Font</h3>
-        <Carousel
-          items={TICKET_FONTS}
-          index={value.fontIndex}
-          onIndexChange={(fontIndex) => set({ fontIndex, fontChosen: false })}
-          selected={value.fontChosen}
-          onSelect={() => set({ fontChosen: !value.fontChosen })}
-          label="ESL font"
-          height={270}
-          renderItem={(f) => label(designModel, tickets[0], 270, { fontFamily: f.family, layout: 'product' })}
-        />
-        <p className={tabs.layoutCaption}>
-          <strong>{font.name}</strong>. {value.fontChosen ? 'Font is chosen.' : 'Tick the circle to choose it.'}
-        </p>
-      </section>
+      {!fromBrand && (
+        <section className={card.section} ref={fontRef}>
+          <h3 className={card.sectionTitle}>Pick a Google Font</h3>
+          <Carousel
+            items={TICKET_FONTS}
+            index={value.fontIndex}
+            onIndexChange={(fontIndex) => set({ fontIndex, fontChosen: false })}
+            selected={value.fontChosen}
+            onSelect={() => set({ fontChosen: !value.fontChosen })}
+            label="ESL font"
+            height={270}
+            renderItem={(f) => label(designModel, tickets[0], 270, { fontFamily: f.family, layout: 'product' })}
+          />
+          <p className={tabs.layoutCaption}>
+            <strong>{font.name}</strong>. {value.fontChosen ? 'Font is chosen.' : 'Tick the circle to choose it.'}
+          </p>
+        </section>
+      )}
 
       <section className={card.section} ref={layoutRef}>
         <h3 className={card.sectionTitle}>Pick a text layout for each ticket</h3>
@@ -148,7 +154,7 @@ const EslFontStep: React.FC<EslFontStepProps> = ({ value: saved, onChange, brand
             </figure>
           ))}
         </div>
-        {showErrors && errorText && value.fontChosen && <p className={form.error}>{errorText}</p>}
+        {showErrors && errorText && fontChosen && <p className={form.error}>{errorText}</p>}
       </section>
 
       <section className={card.section}>
