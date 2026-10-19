@@ -30,14 +30,15 @@
   outline: none;
 }
 
-.segment path {
+.slice {
   fill: var(--seg);
   transition: transform 0.2s ease, filter 0.2s ease;
+  transform-box: view-box;
   transform-origin: 300px 300px;
 }
 
-.segment:hover path,
-.segment:focus-visible path {
+.segment:hover .slice,
+.segment:focus-visible .slice {
   transform: scale(1.04);
   filter: brightness(1.08) drop-shadow(0 6px 10px rgba(0, 0, 0, 0.25));
 }
@@ -73,13 +74,24 @@
 
 .icon {
   display: flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 10px;
+  pointer-events: none;
 }
 
 .icon svg {
   width: 34px;
   height: 34px;
+  overflow: visible;
 }
+
+.icon svg path {
+  fill: none !important;
+  stroke: currentColor !important;
+  transform: none !important;
+}
+
 
 /* Live ticket in the middle */
 .centre {

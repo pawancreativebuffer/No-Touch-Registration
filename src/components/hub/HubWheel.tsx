@@ -73,8 +73,8 @@ const HubWheel: React.FC<HubWheelProps> = ({ options, onPick, onClose }) => {
                 onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onPick(o.id)}
                 style={{ '--seg': o.colour } as React.CSSProperties}
               >
-                <path d={segment(from, to)} />
-                <foreignObject x={lx - 76} y={ly - 78} width={152} height={156}>
+                <path className={styles.slice} d={segment(from, to)} />
+                <foreignObject x={lx - 76} y={ly - 78} width={152} height={156} style={{ overflow: 'visible', pointerEvents: 'none' }}>
                   <div className={styles.label}>
                     <span className={styles.icon}>{o.icon}</span>
                     <strong>{o.title}</strong>
