@@ -112,6 +112,13 @@ const PriceBlock: React.FC<{ layout: EslLayoutId; product: Product; promo: boole
           <Price value={price} />
         </>
       );
+    case 'boxed':
+      return (
+        <div className={styles.boxedPriceBadge}>
+          <Price value={price} className={styles.boxedPrice} />
+          <p className={styles.boxedUnit}>{product.unitPrice}</p>
+        </div>
+      );
     default:
       return (
         <>
@@ -189,6 +196,52 @@ const EslLabel: React.FC<EslLabelProps> = ({
             {promo && <p className={styles.strip}>Save {money(p.price - p.offer)}</p>}
           </div>
         ))}
+      </div>
+    );
+  } else if (layout === 'split') {
+    body = (
+      <div className={`${styles.body} ${styles.splitBody}`}>
+        <div className={styles.splitLeft}>
+          <p className={styles.splitName}>{product.name}</p>
+          <div className={styles.splitTags}>
+            <span className={styles.sizePill}>{product.size}</span>
+            <span className={styles.unitBadge}>{product.unitPrice}</span>
+          </div>
+        </div>
+        <div className={styles.splitDivider} />
+        <div className={styles.splitRight}>
+          <Price value={promo ? product.offer : product.price} className={styles.splitPrice} />
+        </div>
+      </div>
+    );
+  } else if (layout === 'product') {
+    body = (
+      <div className={`${styles.body} ${styles.productBody}`}>
+        <div className={styles.productInfo}>
+          <p className={styles.productName}>{product.name}</p>
+          <div className={styles.productMeta}>
+            <span className={styles.sizePill}>{product.size}</span>
+            <span className={styles.unitPill}>{product.unitPrice}</span>
+          </div>
+        </div>
+        <div className={styles.productDivider} />
+        <div className={styles.productPriceRow}>
+          <span className={styles.priceLeadLabel}>PRICE</span>
+          <Price value={promo ? product.offer : product.price} className={styles.productPrice} />
+        </div>
+      </div>
+    );
+  } else if (layout === 'boxed') {
+    body = (
+      <div className={`${styles.body} ${styles.boxedBody}`}>
+        <div className={styles.boxedInfo}>
+          <p className={styles.boxedName}>{product.name}</p>
+          <span className={styles.sizePill}>{product.size}</span>
+        </div>
+        <div className={styles.boxedBadge}>
+          <Price value={promo ? product.offer : product.price} className={styles.boxedPrice} />
+          <span className={styles.boxedUnit}>{product.unitPrice}</span>
+        </div>
       </div>
     );
   } else {

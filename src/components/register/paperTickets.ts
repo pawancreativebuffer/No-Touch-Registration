@@ -48,7 +48,7 @@ export const paperTickets = (brand: BrandSetup, everyday: BackgroundSetup, promo
         type: 'design',
         kind: 'everyday',
         variant: o === 'portrait' ? everyday.portraitIndex : everyday.landscapeIndex,
-        header: EVERYDAY_HEADER,
+        header: everyday.headers?.[0] || EVERYDAY_HEADER,
         ...ed,
         logoUrl: brand.logoUrl,
       };

@@ -169,6 +169,7 @@ const PrintersPaperStep: React.FC<PrintersPaperStepProps> = ({ value, onChange, 
             const size = findSize(sizeId)!;
             const colour = paperColour[sizeId];
             const qty = paperQty[sizeId] ?? 1;
+            const isInCart = value.cart.some((l) => l.sizeId === sizeId);
             return (
               <li key={sizeId} className={styles.paper}>
                 <div className={styles.paperSheet}>
@@ -184,36 +185,58 @@ const PrintersPaperStep: React.FC<PrintersPaperStepProps> = ({ value, onChange, 
                           key={c}
                           className={`${styles.colour} ${colour === c ? styles.colourOn : ''}`}
                           style={{ backgroundColor: c }}
-                          onClick={() => setPaperColour({ ...paperColour, [sizeId]: c })}
+                          onClick={() => !isInCart && setPaperColour({ ...paperColour, [sizeId]: c })}
+                          disabled={isInCart}
                           aria-label={`Colour ${c}`}
                         />
                       ))}
                     </div>
                   </div>
-                  {colour && (
+                  {colour && !isInCart && (
                     <button type="button" className={styles.clear} onClick={() => setPaperColour({ ...paperColour, [sizeId]: '' })}>
                       Clear selection
                     </button>
                   )}
                   <div className={styles.cartRow}>
                     <div className={styles.stepper}>
-                      <button type="button" onClick={() => setPaperQty({ ...paperQty, [sizeId]: Math.max(1, qty - 1) })} aria-label="Decrease">
+                      <button
+                        type="button"
+                        onClick={() => setPaperQty({ ...paperQty, [sizeId]: Math.max(1, qty - 1) })}
+                        aria-label="Decrease"
+                        disabled={isInCart}
+                      >
                         −
                       </button>
                       <span>{qty}</span>
-                      <button type="button" onClick={() => setPaperQty({ ...paperQty, [sizeId]: qty + 1 })} aria-label="Increase">
+                      <button
+                        type="button"
+                        onClick={() => setPaperQty({ ...paperQty, [sizeId]: qty + 1 })}
+                        aria-label="Increase"
+                        disabled={isInCart}
+                      >
                         +
                       </button>
                     </div>
-                    <button type="button" className={`${form.button} ${styles.addButton}`} onClick={() => addToCart(sizeId)}>
+                    <button
+                      type="button"
+                      className={`${form.button} ${styles.addButton} ${isInCart ? styles.addButtonDisabled : ''}`}
+                      onClick={() => addToCart(sizeId)}
+                      disabled={isInCart}
+                    >
                       <span className={form.buttonIcon}>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                          <circle cx="9" cy="20" r="1.5"></circle>
-                          <circle cx="18" cy="20" r="1.5"></circle>
-                          <path d="M2 3h3l2.7 12.4a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.6L21 7H6"></path>
-                        </svg>
+                        {isInCart ? (
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                          </svg>
+                        ) : (
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="9" cy="20" r="1.5"></circle>
+                            <circle cx="18" cy="20" r="1.5"></circle>
+                            <path d="M2 3h3l2.7 12.4a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.6L21 7H6"></path>
+                          </svg>
+                        )}
                       </span>
-                      <span className={form.buttonText}>Add to cart</span>
+                      <span className={form.buttonText}>{isInCart ? 'Added to cart' : 'Add to cart'}</span>
                     </button>
                     <span className={styles.boxPrice}>{money(PAPER_BOX_PRICE[sizeId] ?? 0)} per box of 500</span>
                   </div>

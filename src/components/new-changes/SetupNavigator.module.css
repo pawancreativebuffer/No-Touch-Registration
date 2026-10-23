@@ -1,0 +1,250 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1720px;
+  margin: 20px auto 40px;
+  background: #ffffff;
+  border-radius: 20px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 16px 48px -10px rgba(0, 0, 0, 0.12), 0 2px 12px rgba(0, 0, 0, 0.04);
+  padding: 24px 20px 32px;
+  gap: 20px;
+}
+
+/* Row 1: Top Row Layout (Store Setup + Top Banner) */
+.topRowLayout {
+  display: flex;
+  align-items: stretch;
+  gap: 20px;
+  width: 100%;
+}
+
+.storeCol {
+  width: 250px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Top Banner Header */
+.topBanner {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.topRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.kicker {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #8b8f9e;
+  height: 18px;
+  display: flex;
+  align-items: center;
+}
+
+.resetBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #6b7280;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.resetBtn:hover {
+  color: var(--secondary, #2b253e);
+}
+
+.headline {
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--secondary, #2b253e);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.subheadline {
+  font-size: 14px;
+  color: #4b5563;
+  width: 100%;
+  max-width: 100%;
+  white-space: nowrap;
+  line-height: 1.4;
+  margin-top: -3px;
+}
+
+/* Solution Selector Pills */
+.solutionsRow {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.solutionPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 16px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.solutionPill:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.solutionPillActive {
+  background: #eb2771 !important;
+  border-color: #eb2771 !important;
+  color: #ffffff !important;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(235, 39, 113, 0.25);
+}
+
+.solutionPillActive:hover {
+  background: #d21d60 !important;
+  border-color: #d21d60 !important;
+  color: #ffffff !important;
+}
+
+.solutionPillActive .pillBadge {
+  color: #ffffff !important;
+}
+
+.pillBadge {
+  font-size: 13px;
+  font-weight: 700;
+  margin-left: 2px;
+}
+
+/* Row 2: 3-Column Content Layout (All 3 top-aligned!) */
+.contentRowLayout {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  width: 100%;
+}
+
+.navCol {
+  width: 250px;
+  flex-shrink: 0;
+}
+
+/* Center Setup Card */
+.card {
+  flex: 1;
+  min-width: 0;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 0 16px 16px;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  min-height: 520px;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #f1f2f6;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.breadcrumbCurrent {
+  color: var(--secondary, #2b253e);
+  font-weight: 700;
+}
+
+.toggleViewBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 15px;
+  border-radius: 9px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #374151;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.toggleViewBtn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: var(--secondary, #2b253e);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  transform: translateY(-1px);
+}
+
+.toggleViewBtn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.btnIcon {
+  color: #64748b;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.toggleViewBtn:hover .btnIcon {
+  color: #eb2771;
+  transform: scale(1.08);
+}
+
+.previewCol {
+  width: 310px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 1200px) {
+
+  .topRowLayout,
+  .contentRowLayout {
+    flex-direction: column;
+  }
+
+  .storeCol,
+  .navCol,
+  .card,
+  .previewCol {
+    width: 100%;
+  }
+}

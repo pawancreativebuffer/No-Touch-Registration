@@ -1,0 +1,17 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-image: url('/images/login-bg.jpg');
+  background-repeat: repeat;
+  background-attachment: fixed;
+  background-color: #f9fafb;
+}
+
+.workspaceArea {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 12px 24px 60px;
+}

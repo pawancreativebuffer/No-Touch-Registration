@@ -1,0 +1,397 @@
+.hubContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+  min-height: 480px;
+  padding: 20px 0;
+  user-select: none;
+}
+
+.diagramArea {
+  position: relative;
+  width: 520px;
+  height: 520px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* SVG Orbit circle */
+.orbitSvg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.orbitPath {
+  stroke: #e5e7eb;
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+  fill: none;
+}
+
+/* Center node */
+.centerNode {
+  position: relative;
+  z-index: 5;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: var(--secondary, #2b253e);
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-shadow: 0 12px 32px -4px rgba(43, 37, 62, 0.35), 0 0 0 10px rgba(43, 37, 62, 0.05);
+  cursor: pointer;
+  border: none;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+  padding: 12px;
+}
+
+.centerNode:hover {
+  transform: scale(1.04);
+  box-shadow: 0 16px 36px -4px rgba(43, 37, 62, 0.45), 0 0 0 12px rgba(43, 37, 62, 0.08);
+}
+
+.centerIcon {
+  font-size: 22px;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f73582;
+}
+
+.centerTitle {
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.centerSubtitle {
+  font-size: 12px;
+  color: #c4c7d4;
+  margin-top: 4px;
+  line-height: 1.2;
+}
+
+/* Satellite nodes */
+.satellite {
+  position: absolute;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  padding: 0;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  width: 140px;
+}
+
+.satelliteCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #ffffff;
+  padding: 6px 8px 8px;
+  border-radius: 16px;
+  width: 100%;
+}
+
+.satellite:hover {
+  transform: scale(1.06);
+}
+
+.satelliteIconWrap {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 6px;
+  color: var(--secondary, #2b253e);
+  transition: all 0.2s ease;
+  z-index: 2;
+}
+
+.satellite:hover .satelliteIconWrap {
+  border-color: #eb2771;
+  color: #eb2771;
+  box-shadow: 0 6px 16px rgba(235, 39, 113, 0.18);
+}
+
+.satelliteDone .satelliteIconWrap {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+  color: #059669;
+}
+
+.satelliteDone:hover .satelliteIconWrap {
+  border-color: #059669;
+  color: #059669;
+  box-shadow: 0 6px 16px rgba(5, 150, 105, 0.2);
+}
+
+.checkBadge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #059669;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.satelliteTextWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: #ffffff;
+  padding: 2px 6px;
+  border-radius: 8px;
+  z-index: 2;
+}
+
+.satelliteLabel {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--secondary, #2b253e);
+  line-height: 1.25;
+}
+
+.satellite:hover .satelliteLabel {
+  color: #eb2771;
+}
+
+.satelliteSubtitle {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 3px;
+  max-width: 130px;
+  line-height: 1.3;
+}
+
+/* Disabled satellite node state */
+.satelliteDisabled,
+.satellite:disabled {
+  opacity: 0.38;
+  cursor: not-allowed !important;
+  pointer-events: auto;
+}
+
+.satelliteDisabled:hover,
+.satellite:disabled:hover {
+  transform: none !important;
+}
+
+.satelliteDisabled .satelliteCard,
+.satellite:disabled .satelliteCard {
+  background: #f8fafc;
+  box-shadow: none;
+}
+
+.satelliteDisabled .satelliteIconWrap,
+.satellite:disabled .satelliteIconWrap {
+  background: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+  color: #94a3b8 !important;
+  box-shadow: none !important;
+}
+
+.satelliteDisabled:hover .satelliteIconWrap,
+.satellite:disabled:hover .satelliteIconWrap {
+  border-color: #e2e8f0 !important;
+  color: #94a3b8 !important;
+  box-shadow: none !important;
+}
+
+.satelliteDisabled .satelliteLabel,
+.satellite:disabled .satelliteLabel {
+  color: #94a3b8 !important;
+}
+
+.satelliteDisabled:hover .satelliteLabel,
+.satellite:disabled:hover .satelliteLabel {
+  color: #94a3b8 !important;
+}
+
+.satelliteDisabled .satelliteSubtitle,
+.satellite:disabled .satelliteSubtitle {
+  color: #cbd5e1 !important;
+}
+
+/* Positions for 4-node layout */
+.nodeTop {
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.nodeTop:hover {
+  transform: translateX(-50%) scale(1.06);
+}
+
+.nodeRight {
+  right: 0px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.nodeRight:hover {
+  transform: translateY(-50%) scale(1.06);
+}
+
+.nodeBottom {
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.nodeBottom:hover {
+  transform: translateX(-50%) scale(1.06);
+}
+
+.nodeLeft {
+  left: 0px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.nodeLeft:hover {
+  transform: translateY(-50%) scale(1.06);
+}
+
+/* Positions for 3-node layout (Top, Bottom-Left, Bottom-Right) */
+.nodeTriTop {
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.nodeTriTop:hover {
+  transform: translateX(-50%) scale(1.06);
+}
+
+.nodeTriRight {
+  bottom: 50px;
+  right: 25px;
+}
+
+.nodeTriLeft {
+  bottom: 50px;
+  left: 25px;
+}
+
+/* Positions for 2-node layout (Left, Right) */
+.nodeBiLeft {
+  top: 50%;
+  left: 20px;
+  transform: translateY(-50%);
+}
+.nodeBiLeft:hover {
+  transform: translateY(-50%) scale(1.06);
+}
+
+.nodeBiRight {
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+}
+.nodeBiRight:hover {
+  transform: translateY(-50%) scale(1.06);
+}
+
+/* Positions for 5-node layout (Pentagon: Top, Top-Right, Bottom-Right, Bottom-Left, Top-Left) */
+.nodePenta0 {
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.nodePenta0:hover {
+  transform: translateX(-50%) scale(1.06);
+}
+
+.nodePenta1 {
+  top: 120px;
+  right: 15px;
+}
+
+.nodePenta2 {
+  bottom: 35px;
+  right: 65px;
+}
+
+.nodePenta3 {
+  bottom: 35px;
+  left: 65px;
+}
+
+.nodePenta4 {
+  top: 120px;
+  left: 15px;
+}
+
+/* Positions for 6-node layout (Hexagon: Top, Top-Right, Bottom-Right, Bottom, Bottom-Left, Top-Left) */
+.nodeHexa0 {
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.nodeHexa0:hover {
+  transform: translateX(-50%) scale(1.06);
+}
+
+.nodeHexa1 {
+  top: 95px;
+  right: 15px;
+}
+
+.nodeHexa2 {
+  bottom: 95px;
+  right: 15px;
+}
+
+.nodeHexa3 {
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.nodeHexa3:hover {
+  transform: translateX(-50%) scale(1.06);
+}
+
+.nodeHexa4 {
+  bottom: 95px;
+  left: 15px;
+}
+
+.nodeHexa5 {
+  top: 95px;
+  left: 15px;
+}
+
+.bottomCaption {
+  margin-top: 24px;
+  font-size: 12px;
+  color: #6b7280;
+  text-align: center;
+}

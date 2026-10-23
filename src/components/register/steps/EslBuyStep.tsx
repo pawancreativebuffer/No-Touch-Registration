@@ -7,7 +7,7 @@ import Illustration from '../ui/Illustrations';
 import Qty from '../ui/Qty';
 import StepFooter from '../ui/StepFooter';
 import { money } from '../data';
-import { ESL_ACCESS_POINT, ESL_SUBSCRIPTION } from '../devices';
+import { ESL_ACCESS_POINT, ESL_MODELS, ESL_SUBSCRIPTION } from '../devices';
 import { eslAccessPoints, eslFixtures, eslLabelCount, eslOrder, eslSubscriptionTotal, fitsLabel, selectedEsls } from '../pricing';
 import { EslSetup } from '../state';
 
@@ -28,29 +28,30 @@ const EslBuyStep: React.FC<EslBuyStepProps> = ({ value, onChange, onBack, onNext
   const [showErrors, setShowErrors] = useState(false);
 
   const handleNext = () => {
-    if (labels === 0) {
-      setShowErrors(true);
-      return;
-    }
     onNext();
   };
 
-  const setLabelQty = (id: string, qty: number) =>
+  const setLabelQty = (id: string, qty: number) => {
+    const selected = qty > 0
+      ? (value.selected.includes(id) ? value.selected : [...value.selected, id])
+      : value.selected.filter((s) => s !== id);
     onChange({
       ...value,
       qty: { ...value.qty, [id]: qty },
-      selected: qty > 0 ? value.selected : value.selected.filter((s) => s !== id),
+      selected,
     });
+  };
 
   return (
     <div className={card.card}>
       <div className={card.titleBar}>
         <h2 className={card.headline}>Your ESL package</h2>
-        <p className={card.subline}>We have recommended fixtures and access points for your labels. Adjust anything you like.</p>
+        <p className={card.subline}>Select your shelf labels, fixtures and access points. Adjust anything you like.</p>
       </div>
 
       <section className={card.section}>
-        <h3 className={card.sectionTitle}>Selected ESLs</h3>
+        <h3 className={card.sectionTitle}>Electronic Shelf Labels (ESLs)</h3>
+        <p className={card.sectionIntro}>Select models and quantities for your store shelves.</p>
         <table className={choice.table}>
           <thead>
             <tr>
@@ -61,26 +62,33 @@ const EslBuyStep: React.FC<EslBuyStepProps> = ({ value, onChange, onBack, onNext
             </tr>
           </thead>
           <tbody>
-            {lines.map(({ model, qty }) => (
-              <tr key={model.id}>
-                <td>
-                  {model.size} ESL {model.model}
-                  <small>{model.resolution} px · black, white, red and yellow</small>
-                </td>
-                <td>{money(model.price)}</td>
-                <td>
-                  <Qty value={qty} onChange={(q) => setLabelQty(model.id, q)} step={model.qtyStep} label={`${model.model} quantity`} />
-                </td>
-                <td>{money(model.price * qty)}</td>
-              </tr>
-            ))}
+            {ESL_MODELS.map((model) => {
+              const qty = value.qty[model.id] ?? (value.selected.includes(model.id) ? model.defaultQty : 0);
+              return (
+                <tr key={model.id}>
+                  <td>
+                    {model.size} ESL {model.model}
+                    <small>{model.resolution} px · black, white, red and yellow</small>
+                  </td>
+                  <td>{money(model.price)}</td>
+                  <td>
+                    <Qty value={qty} onChange={(q) => setLabelQty(model.id, q)} step={model.qtyStep} label={`${model.model} quantity`} />
+                  </td>
+                  <td>{money(model.price * qty)}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </section>
 
       <section className={card.section}>
         <h3 className={card.sectionTitle}>Fixtures and fittings</h3>
-        <p className={card.sectionIntro}>Recommended quantities are based on your labels. Set any fixture to 0 if you do not need it.</p>
+        <p className={card.sectionIntro}>
+          {labels > 0
+            ? 'Recommended quantities are based on your labels. Set any fixture to 0 if you do not need it.'
+            : 'Select ESL models above to see recommended shelf fixtures.'}
+        </p>
         {fixtures.map(({ fixture, recommended, qty }) => (
           <div key={fixture.id} className={choice.item}>
             <Illustration id={fixture.id} className={choice.itemArt} />

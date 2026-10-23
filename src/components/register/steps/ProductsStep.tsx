@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import card from '../StepCard.module.css';
 import form from '../../ui/Form.module.css';
 import choice from '../ui/Choice.module.css';
@@ -9,10 +8,9 @@ import bg from './BackgroundStep.module.css';
 import styles from './ProductsStep.module.css';
 import CheckCircle from '../ui/CheckCircle';
 import Illustration, { IllustrationId } from '../ui/Illustrations';
-import OutputShowcase from '../ui/OutputShowcase';
 import StepFooter from '../ui/StepFooter';
 import { money } from '../data';
-import { Solution, SOLUTION_NAMES, SOLUTION_ORDER } from '../flow';
+import { Solution, SOLUTION_ORDER } from '../flow';
 import { PRODUCT_TEMPLATE_CSV, RETAIL_SYSTEMS, RetailSystem, SAMPLE_PRODUCTS } from '../products';
 import { BackgroundSetup, BrandSetup, DataSetup, EslSetup, FontSetup, ScreenSetup } from '../state';
 
@@ -52,17 +50,14 @@ const downloadTemplate = () => {
 };
 
 const ProductsStep: React.FC<ProductsStepProps> = ({ value, onChange, solutions, brand, font, everyday, promo, esl, screens, onBack, onNext, nextLabel }) => {
-  const router = useRouter();
   const [method, setMethod] = useState<Method | null>(value.helpRequested && !value.imported ? 'help' : null);
   const [phase, setPhase] = useState<Phase>('idle');
   const [fileName, setFileName] = useState('');
   const [system, setSystem] = useState<RetailSystem | null>(null);
   const [account, setAccount] = useState('');
   const [contact, setContact] = useState('Phone call');
-  const [saved, setSaved] = useState(false);
   const [showErrors, setShowErrors] = useState(false);
 
-  const chosen = SOLUTION_ORDER.filter((s) => solutions.includes(s));
   const busy = phase === 'uploading' || phase === 'connecting' || phase === 'importing';
 
   const pickMethod = (m: Method) => {
@@ -233,15 +228,15 @@ const ProductsStep: React.FC<ProductsStepProps> = ({ value, onChange, solutions,
                   {phase === 'importing'
                     ? working(`Importing ${SAMPLE_PRODUCTS.length} products...`)
                     : !value.imported && (
-                        <button type="button" className={`${form.button} ${choice.inlineButton} ${styles.action}`} onClick={() => importProducts(fileName)}>
-                          <span className={form.buttonIcon}>
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                              <polyline points="20 6 9 17 4 12"></polyline>
-                            </svg>
-                          </span>
-                          <span className={form.buttonText}>Import {SAMPLE_PRODUCTS.length} products</span>
-                        </button>
-                      )}
+                      <button type="button" className={`${form.button} ${choice.inlineButton} ${styles.action}`} onClick={() => importProducts(fileName)}>
+                        <span className={form.buttonIcon}>
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                          </svg>
+                        </span>
+                        <span className={form.buttonText}>Import {SAMPLE_PRODUCTS.length} products</span>
+                      </button>
+                    )}
                 </div>
               </li>
             )}
@@ -341,69 +336,12 @@ const ProductsStep: React.FC<ProductsStepProps> = ({ value, onChange, solutions,
         </section>
       )}
 
-      {value.imported && (
-        <section className={card.section}>
-          <h3 className={card.sectionTitle}>Your products, in your designs</h3>
-          {success(
-            `${SAMPLE_PRODUCTS.length} products imported from ${value.source}.${
-              chosen.length > 1 ? ` One data source now feeds ${chosen.map((s) => SOLUTION_NAMES[s]).join(', ')}.` : ''
-            }`,
-          )}
-          <div className={styles.showcase}>
-            <OutputShowcase solutions={solutions} brand={brand} font={font} everyday={everyday} promo={promo} esl={esl} screens={screens} products={SAMPLE_PRODUCTS} height={280} />
-          </div>
-        </section>
-      )}
-
-      <section className={card.section}>
-        <div className={styles.later}>
-          <div>
-            <strong>Not ready yet?</strong>
-            <p className={choice.muted}>
-              Save your setup and add products whenever you like. Your three-month Ticket-IT subscription starts at activation, subject to the
-              commercial policy being confirmed.
-            </p>
-          </div>
-          <button type="button" className={`${form.button} ${form.buttonSecondary} ${choice.inlineButton}`} onClick={() => setSaved(true)}>
-            <span className={form.buttonIcon}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
-                <polyline points="17 21 17 13 7 13 7 21" />
-              </svg>
-            </span>
-            <span className={form.buttonText}>Save and finish later</span>
-          </button>
-        </div>
-      </section>
-
       <StepFooter
         onBack={onBack}
         nextLabel={nextLabel}
         onNext={handleNext}
-        error={showErrors && !value.imported && !value.helpRequested ? 'Add your products, request help, or choose Save and finish later.' : ''}
+        error={showErrors && !value.imported && !value.helpRequested ? 'Add your products or request help.' : ''}
       />
-
-      {saved && (
-        <div className={styles.modal} role="dialog" aria-label="Setup saved">
-          <div className={styles.modalCard}>
-            <span className={styles.modalTick}>
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12"></polyline>
-              </svg>
-            </span>
-            <h3>Your setup is saved</h3>
-            <p>Log in any time to add your products and prices and go live. Your subscription will not start until you activate.</p>
-            <div className={styles.modalActions}>
-              <button type="button" className={`${form.button} ${form.buttonSecondary}`} onClick={() => setSaved(false)}>
-                <span className={form.buttonText}>Keep going</span>
-              </button>
-              <button type="button" className={form.button} onClick={() => router.push('/')}>
-                <span className={form.buttonText}>Go to login</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

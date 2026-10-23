@@ -19,26 +19,30 @@ export interface EslTicketDef {
 /** Design picked for a promotion, or its recommended ESL design */
 export const eslStyleOf = (esl: EslSetup, id: PromoTypeId) => esl.typeStyles?.[id] ?? ESL_PROMO_DEFAULTS[id].style;
 
-export const eslTickets = (esl: EslSetup): EslTicketDef[] => [
-  {
-    key: 'everyday',
-    name: 'Everyday',
-    mode: 'everyday',
-    style: esl.everydayStyle,
-    header: EVERYDAY_HEADER,
-    layouts: ESL_EVERYDAY_LAYOUTS,
-    recommended: 'price',
-  },
-  ...PROMO_TYPES.filter((t) => esl.promoTypes?.includes(t.id)).map((t) => ({
-    key: t.id,
-    name: t.name,
-    mode: 'promo' as const,
-    style: eslStyleOf(esl, t.id),
-    header: t.header,
-    layouts: ESL_PROMO_LAYOUTS,
-    recommended: ESL_PROMO_DEFAULTS[t.id].layout,
-  })),
-];
+export const eslTickets = (esl: EslSetup): EslTicketDef[] => {
+  const chosen = PROMO_TYPES.filter((t) => esl.promoTypes?.includes(t.id));
+  const activePromos = chosen.length > 0 ? chosen : PROMO_TYPES.slice(0, 2);
+  return [
+    {
+      key: 'everyday',
+      name: 'Everyday',
+      mode: 'everyday',
+      style: esl.everydayStyle,
+      header: esl.everydayHeader || EVERYDAY_HEADER,
+      layouts: ESL_EVERYDAY_LAYOUTS,
+      recommended: 'price',
+    },
+    ...activePromos.map((t) => ({
+      key: t.id,
+      name: t.name,
+      mode: 'promo' as const,
+      style: eslStyleOf(esl, t.id),
+      header: t.header,
+      layouts: ESL_PROMO_LAYOUTS,
+      recommended: ESL_PROMO_DEFAULTS[t.id].layout,
+    })),
+  ];
+};
 
 /** ESL designs copied from the Paper steps: same promotions with the same design, same font.
  *  Paper Everyday textures cannot show on a 4-colour screen, so Everyday starts on the black band design. */

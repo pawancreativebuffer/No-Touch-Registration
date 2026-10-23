@@ -17,6 +17,8 @@ interface PrintSizesStepProps {
   onBack: () => void;
   onNext: () => void;
   nextLabel: string;
+  hideMethod?: boolean;
+  hideTitleBar?: boolean;
 }
 
 const MethodArt: React.FC<{ method: PrintMethod }> = ({ method }) => (
@@ -40,7 +42,7 @@ const MethodArt: React.FC<{ method: PrintMethod }> = ({ method }) => (
   </div>
 );
 
-const PrintSizesStep: React.FC<PrintSizesStepProps> = ({ kind, value, onChange, onBack, onNext, nextLabel }) => {
+const PrintSizesStep: React.FC<PrintSizesStepProps> = ({ kind, value, onChange, onBack, onNext, nextLabel, hideMethod, hideTitleBar }) => {
   const [showErrors, setShowErrors] = useState(false);
   const methodRef = useRef<HTMLElement>(null);
   const sizesRef = useRef<HTMLElement>(null);
@@ -51,13 +53,13 @@ const PrintSizesStep: React.FC<PrintSizesStepProps> = ({ kind, value, onChange, 
       sizes: value.sizes.includes(id) ? value.sizes.filter((s) => s !== id) : [...value.sizes, id],
     });
 
-  const methodError = !value.method ? 'Choose how you would like to print.' : '';
+  const methodError = !hideMethod && !value.method ? 'Choose how you would like to print.' : '';
   const sizeError = value.sizes.length === 0 ? 'Select at least one ticket size.' : '';
 
   const handleNext = () => {
     if (methodError || sizeError) {
       setShowErrors(true);
-      (methodError ? methodRef : sizesRef).current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      (!hideMethod && methodError ? methodRef : sizesRef).current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       return;
     }
     onNext();
@@ -65,36 +67,46 @@ const PrintSizesStep: React.FC<PrintSizesStepProps> = ({ kind, value, onChange, 
 
   return (
     <div className={card.card}>
-      <div className={card.titleBar}>
-        <h2 className={card.headline}>How would you like to print your {kind} tickets?</h2>
-        <p className={card.subline}>Pick a print process, then tick every {kind.toLowerCase()} ticket size you use</p>
-      </div>
-
-      <section className={card.section} ref={methodRef}>
-        <h3 className={card.sectionTitle}>Print process</h3>
-        <div className={styles.methods}>
-          {PRINT_METHODS.map((m) => (
-            <div
-              key={m.id}
-              className={`${styles.option} ${styles.method} ${value.method === m.id ? styles.selected : ''}`}
-              onClick={() => onChange({ ...value, method: m.id })}
-            >
-              <MethodArt method={m.id} />
-              <div className={styles.methodText}>
-                <CheckCircle checked={value.method === m.id} label={m.text} />
-                <span>{m.text}</span>
-              </div>
-            </div>
-          ))}
+      {!hideTitleBar && (
+        <div className={card.titleBar}>
+          <h2 className={card.headline}>
+            {hideMethod ? `Select your ${kind} ticket sizes` : `How would you like to print your ${kind} tickets?`}
+          </h2>
+          <p className={card.subline}>
+            {hideMethod
+              ? `Tick every ${kind.toLowerCase()} ticket size you use`
+              : `Pick a print process, then tick every ${kind.toLowerCase()} ticket size you use`}
+          </p>
         </div>
-        {showErrors && methodError && <p className={form.error}>{methodError}</p>}
-        {showErrors && !methodError && sizeError && <p className={form.error}>{sizeError}</p>}
-      </section>
+      )}
+
+      {!hideMethod && (
+        <section className={card.section} ref={methodRef}>
+          <h3 className={card.sectionTitle}>Print process</h3>
+          <div className={styles.methods}>
+            {PRINT_METHODS.map((m) => (
+              <div
+                key={m.id}
+                className={`${styles.option} ${styles.method} ${value.method === m.id ? styles.selected : ''}`}
+                onClick={() => onChange({ ...value, method: m.id })}
+              >
+                <MethodArt method={m.id} />
+                <div className={styles.methodText}>
+                  <CheckCircle checked={value.method === m.id} label={m.text} />
+                  <span>{m.text}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+          {showErrors && methodError && <p className={form.error}>{methodError}</p>}
+          {showErrors && !methodError && sizeError && <p className={form.error}>{sizeError}</p>}
+        </section>
+      )}
 
       {SIZE_GROUPS.map((group, gi) => (
-        <section key={group.id} className={card.section} ref={gi === 0 ? sizesRef : undefined}>
-          <h3 className={card.sectionTitle}>
-            Select your {kind} {group.title}
+        <section key={group.id} className={`${card.section} ${gi === 0 ? styles.firstGroup : ''}`} ref={gi === 0 ? sizesRef : undefined}>
+          <h3 className={styles.groupHeading}>
+            {group.title}
           </h3>
           <div className={styles.sizes}>
             {group.sizes.map((size) => {

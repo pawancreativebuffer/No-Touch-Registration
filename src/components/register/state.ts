@@ -9,6 +9,7 @@ export interface PrintSetup {
 /** Store category, logo and colours: collected once and reused by Paper, ESL and Digital Screens */
 export interface BrandSetup {
   category: string;
+  storeName?: string;
   logoName: string;
   logoUrl: string;
   /** Brand colours, used for Everyday content */
@@ -17,9 +18,11 @@ export interface BrandSetup {
   /** Promotional colours, used for Promotional content */
   promo1: string;
   promo2: string;
+  coloursChosen?: boolean;
 }
 
 export type BackgroundMode = 'select' | 'ai' | 'upload';
+export type TicketOrientation = 'portrait' | 'landscape' | 'both';
 
 /** Artwork uploaded for one promotion type */
 export interface PromoUpload {
@@ -57,6 +60,9 @@ export interface BackgroundSetup {
   portraitChosen: boolean;
   landscapeIndex: number;
   landscapeChosen: boolean;
+  orientation?: TicketOrientation;
+  orientationChosen?: boolean;
+  backgroundChosen?: boolean;
 }
 
 export interface FontSetup {
@@ -102,6 +108,9 @@ export interface EslSetup {
   /** Fixture quantities the user changed; others follow the recommendation */
   fixtureQty: Record<string, number>;
   apQty: number | null;
+  /** Header title for everyday tickets: 'Everyday Value' | 'Great Price' | 'Core Range' */
+  everydayHeader?: string;
+  promoDesignChosen?: boolean;
 }
 
 export type ScreenMotion = 'static' | 'animated';
@@ -139,6 +148,10 @@ export interface ScreenSetup {
   wideMount: Record<string, Extract<ScreenMountId, 'wall' | 'ceiling'>>;
   /** Network quantities the user changed; others follow the recommendation */
   networkQty: Record<string, number>;
+  /** Header title for everyday screens: 'Everyday Value' | 'Great Price' | 'Core Range' */
+  everydayHeader?: string;
+  promoDesignChosen?: boolean;
+  motionChosen?: boolean;
 }
 
 export interface DataSetup {
@@ -157,12 +170,14 @@ export const EMPTY_PRINT: PrintSetup = { method: null, sizes: [] };
 
 export const BRAND_DEFAULTS: BrandSetup = {
   category: '',
+  storeName: '',
   logoName: '',
   logoUrl: '',
   colour1: '#2b253e',
   colour2: '#f73582',
   promo1: '#b31f2b',
   promo2: '#f9a51b',
+  coloursChosen: false,
 };
 
 /** The two colours used for Everyday or Promotional content */
@@ -187,6 +202,9 @@ export const everydayDefaults = (): BackgroundSetup => ({
   portraitChosen: false,
   landscapeIndex: 0,
   landscapeChosen: false,
+  orientation: 'both',
+  orientationChosen: false,
+  backgroundChosen: false,
 });
 
 export const promoDefaults = (): BackgroundSetup => ({
@@ -221,6 +239,8 @@ export const ESL_DEFAULTS: EslSetup = {
   layoutsChosen: [],
   fixtureQty: {},
   apQty: null,
+  everydayHeader: 'Everyday Value',
+  promoDesignChosen: false,
 };
 
 export const SCREEN_DEFAULTS: ScreenSetup = {
@@ -246,6 +266,9 @@ export const SCREEN_DEFAULTS: ScreenSetup = {
   layout: 'single',
   wideMount: {},
   networkQty: {},
+  everydayHeader: 'Everyday Value',
+  promoDesignChosen: false,
+  motionChosen: false,
 };
 
 export const DATA_DEFAULTS: DataSetup = { imported: false, source: '', helpRequested: false };

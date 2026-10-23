@@ -1,21 +1,19 @@
 /* Shared shell for every register step: card, title band and footer */
 .card {
-  background: #ffffff;
-  border: 1px solid #e2e2e2;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
-  overflow: hidden;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
   /* One spacing value for the title band, card edges and gaps between blocks */
   --pad: 20px;
   --field-gap: 16px;
-  padding: 0 var(--pad) var(--pad);
+  padding: 0;
 }
 
 /* Title band in Ticket-IT secondary, flush with the card's top, left and right edges */
 .titleBar {
-  background-color: var(--secondary);
-  margin: 0 calc(var(--pad) * -1) var(--pad);
-  padding: var(--pad);
+  display: none;
 }
 
 .headline {

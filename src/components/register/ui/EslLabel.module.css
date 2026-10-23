@@ -173,13 +173,225 @@
   font-size: min(11cqh, calc(32cqw / var(--pw)));
 }
 
-/* Product focus: bigger name, smaller price */
-.l-product .name {
-  font-size: min(10cqh, 17cqw);
+/* Product focus: structured card details */
+.productBody {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: space-between;
+  padding: 2.5cqh 5cqw;
+  gap: 1cqh;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
 }
 
-.l-product .price {
-  font-size: min(18cqh, calc(66cqw / var(--pw)));
+.productInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 0.8cqh;
+  width: 100%;
+}
+
+.productName {
+  font-weight: 800;
+  font-size: min(8.5cqh, 15cqw);
+  line-height: 1.15;
+  color: var(--black);
+  word-break: break-word;
+}
+
+.productMeta {
+  display: flex;
+  align-items: center;
+  gap: 2cqw;
+  flex-wrap: wrap;
+}
+
+.productDivider {
+  width: 100%;
+  height: max(1px, 0.4cqh);
+  background-color: var(--black);
+  opacity: 0.2;
+  margin: 0.5cqh 0;
+}
+
+.productPriceRow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  width: 100%;
+  gap: 2cqw;
+}
+
+.priceLeadLabel {
+  font-size: min(4cqh, 6.5cqw);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--black);
+  opacity: 0.5;
+}
+
+.productPrice {
+  font-size: min(23cqh, calc(68cqw / var(--pw)));
+  margin-left: auto;
+}
+
+/* Side-by-side split layout */
+.splitBody {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3cqw;
+  padding: 2cqh 4cqw;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.splitLeft {
+  flex: 1 1 52%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  text-align: left;
+  gap: 1.2cqh;
+  min-width: 0;
+}
+
+.splitName {
+  font-weight: 800;
+  font-size: min(8.2cqh, 13.5cqw);
+  line-height: 1.12;
+  color: var(--black);
+  word-break: break-word;
+}
+
+.splitTags {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.8cqh;
+}
+
+.sizePill {
+  display: inline-block;
+  font-size: min(4.2cqh, 7.5cqw);
+  font-weight: 700;
+  padding: 0.2cqh 2cqw;
+  border-radius: 999px;
+  border: max(1px, 0.35cqh) solid var(--black);
+  color: var(--black);
+  line-height: 1.2;
+}
+
+.unitBadge {
+  display: inline-block;
+  font-size: min(4.2cqh, 7.5cqw);
+  font-weight: 700;
+  padding: 0.3cqh 2cqw;
+  background-color: rgba(0, 0, 0, 0.07);
+  border-radius: 4px;
+  color: var(--black);
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.unitPill {
+  font-size: min(4.5cqh, 8cqw);
+  font-weight: 600;
+  color: var(--black);
+  opacity: 0.8;
+}
+
+.splitDivider {
+  width: max(1px, 0.4cqh);
+  height: 75%;
+  background-color: var(--black);
+  opacity: 0.2;
+  flex-shrink: 0;
+}
+
+.splitRight {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.splitPrice {
+  font-size: min(25cqh, calc(46cqw / var(--pw)));
+}
+
+/* Boxed / High-contrast badge layout */
+.boxedBody {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.8cqh;
+  padding: 2cqh 4cqw;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.boxedInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6cqh;
+}
+
+.boxedName {
+  font-weight: 800;
+  font-size: min(7.5cqh, 13cqw);
+  text-align: center;
+  color: var(--black);
+}
+
+.boxedBadge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--black);
+  color: var(--white);
+  border-radius: min(2.5cqh, 3.5cqw);
+  padding: 1.5cqh 5cqw;
+  width: 88%;
+  max-width: 240px;
+  gap: 0.4cqh;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.boxedPrice {
+  color: var(--white) !important;
+  font-size: min(22cqh, calc(72cqw / var(--pw)));
+}
+
+.boxedUnit {
+  font-size: min(4.5cqh, 7.5cqw);
+  color: var(--white);
+  opacity: 0.95;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.boxedPriceBadge {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--black);
+  color: var(--white);
+  border-radius: min(2cqh, 3cqw);
+  padding: 1.2cqh 4cqw;
 }
 
 /* Offer layouts lead with the price */
@@ -231,12 +443,57 @@
   font-size: min(40cqh, calc(46cqw / var(--pw)));
 }
 
-.landscape.l-product .name {
-  font-size: 13cqh;
+.landscape .splitBody {
+  padding: 1.5cqh 4cqw;
+  gap: 4cqw;
 }
 
-.landscape.l-product .price {
-  font-size: min(30cqh, calc(36cqw / var(--pw)));
+.landscape .splitName {
+  font-size: 11cqh;
+}
+
+.landscape .splitPrice {
+  font-size: min(38cqh, calc(40cqw / var(--pw)));
+}
+
+.landscape .productBody {
+  padding: 1.5cqh 5cqw;
+  gap: 1cqh;
+}
+
+.landscape .productName {
+  font-size: 11cqh;
+}
+
+.landscape .productPrice {
+  font-size: min(34cqh, calc(42cqw / var(--pw)));
+}
+
+.landscape .boxedBody {
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 4cqw;
+  padding: 1.5cqh 5cqw;
+}
+
+.landscape .boxedInfo {
+  align-items: flex-start;
+  text-align: left;
+  flex: 1;
+}
+
+.landscape .boxedName {
+  font-size: 11cqh;
+  text-align: left;
+}
+
+.landscape .boxedBadge {
+  width: auto;
+  padding: 1.5cqh 4cqw;
+}
+
+.landscape .boxedPrice {
+  font-size: min(34cqh, calc(42cqw / var(--pw)));
 }
 
 .landscape .strip {

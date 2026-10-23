@@ -28,10 +28,15 @@ const TicketTabs: React.FC<TicketTabsProps> = ({ tickets, activeKey, onChange })
 
   const tick = (on?: boolean) => on && <span className={styles.tick} aria-hidden="true" />;
 
+  // If there are no promotions to switch to (only Everyday), or only 1 item total, do not render tabs
+  if (tickets.length <= 1 || (everyday && promos.length === 0) || (!everyday && promos.length <= 1)) {
+    return null;
+  }
+
   return (
     <>
-      <div className={styles.tabs} role="tablist">
-        {everyday && (
+      {everyday && promos.length > 0 && (
+        <div className={styles.tabs} role="tablist">
           <button
             type="button"
             role="tab"
@@ -42,8 +47,6 @@ const TicketTabs: React.FC<TicketTabsProps> = ({ tickets, activeKey, onChange })
             {tick(everyday.ticked)}
             Everyday
           </button>
-        )}
-        {promos.length > 0 && (
           <button
             type="button"
             role="tab"
@@ -54,9 +57,9 @@ const TicketTabs: React.FC<TicketTabsProps> = ({ tickets, activeKey, onChange })
             {tick(promos.every((t) => t.ticked))}
             Promotional
           </button>
-        )}
-      </div>
-      {onPromo && (
+        </div>
+      )}
+      {(onPromo || !everyday) && promos.length > 1 && (
         <div className={styles.promoTabs} role="tablist" aria-label="Promotions">
           {promos.map((t) => (
             <button

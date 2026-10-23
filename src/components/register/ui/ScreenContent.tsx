@@ -126,6 +126,13 @@ const PriceBlock: React.FC<{ layout: EslLayoutId; product: Product; promo: boole
           <Price value={price} />
         </>
       );
+    case 'boxed':
+      return (
+        <span className={styles.screenBoxedBadge}>
+          <Price value={price} />
+          <span className={styles.screenBoxedUnit}>{product.unitPrice}</span>
+        </span>
+      );
     default:
       return (
         <>
@@ -205,7 +212,7 @@ const ScreenContent: React.FC<ScreenContentProps> = ({
       <div className={styles.device}>
         <div className={styles.bezel} style={{ padding: bezel, borderRadius: bezel * 0.6 }}>
           <div
-            className={`${styles.canvas} ${styles[model.shape]} ${styles[styleClass]} ${animated ? styles.animated : ''} ${text === 'product' ? styles.lProduct : ''}`}
+            className={`${styles.canvas} ${styles[model.shape]} ${styles[styleClass]} ${animated ? styles.animated : ''} ${text === 'product' ? styles.lProduct : ''} ${text === 'split' ? styles.lSplit : ''} ${text === 'boxed' ? styles.lBoxed : ''}`}
             style={vars}
           >
             <div className={styles.bg} />

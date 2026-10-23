@@ -25,14 +25,28 @@ interface EslFontStepProps {
   nextLabel: string;
   /** Font chosen once in Brand, Colours & Fonts; hides the font picker */
   brandFontIndex?: number;
+  targetMode?: 'everyday' | 'promo';
 }
 
 /** Font and text layout for each ESL ticket, shown on the ESL designs and sizes the retailer chose */
-const EslFontStep: React.FC<EslFontStepProps> = ({ value: saved, onChange, brand, onBack, onNext, nextLabel, brandFontIndex }) => {
+const EslFontStep: React.FC<EslFontStepProps> = ({ value: saved, onChange, brand, onBack, onNext, nextLabel, brandFontIndex, targetMode }) => {
   // Older saved state may not have the newer fields
-  const value: EslSetup = { ...saved, layouts: saved.layouts ?? {}, layoutsChosen: saved.layoutsChosen ?? [], fontChosen: saved.fontChosen ?? false };
+  const value: EslSetup = {
+    ...saved,
+    layouts: saved.layouts ?? {},
+    layoutsChosen: saved.layoutsChosen ?? [],
+    fontChosen: saved.fontChosen ?? false,
+    everydayHeader: saved.everydayHeader || 'Everyday Value',
+  };
+  const allTickets = eslTickets(value);
+  const tickets = React.useMemo(() => {
+    if (targetMode === 'everyday') return allTickets.filter((t) => t.mode === 'everyday');
+    if (targetMode === 'promo') return allTickets.filter((t) => t.mode === 'promo');
+    return allTickets;
+  }, [allTickets, targetMode]);
+
   const [showErrors, setShowErrors] = useState(false);
-  const [activeKey, setActiveKey] = useState('everyday');
+  const [activeKey, setActiveKey] = useState(() => (targetMode === 'promo' ? (tickets[0]?.key || 'special') : 'everyday'));
   const fontRef = useRef<HTMLElement>(null);
   const layoutRef = useRef<HTMLElement>(null);
   const set = (patch: Partial<EslSetup>) => onChange({ ...value, ...patch });
@@ -46,10 +60,12 @@ const EslFontStep: React.FC<EslFontStepProps> = ({ value: saved, onChange, brand
   const multiModel = [...lines].reverse().find((l) => l.model.width >= 960)?.model ?? findEsl('zkc102b')!;
   const multiIsExample = !lines.some((l) => l.model.id === multiModel.id);
 
-  const tickets = eslTickets(value);
   const active = tickets.find((t) => t.key === activeKey) ?? tickets[0];
-  const layoutOf = (t: EslTicketDef) => value.layouts[t.key] ?? t.recommended;
-  const chosen = (t: EslTicketDef) => value.layoutsChosen.includes(t.key);
+  const layoutOf = (t: EslTicketDef) => {
+    if (!t) return 'price';
+    return value.layouts[t.key] ?? t.recommended;
+  };
+  const chosen = (t: EslTicketDef) => !t || value.layoutsChosen.includes(t.key);
   const missing = tickets.filter((t) => !chosen(t));
 
   const moveLayout = (t: EslTicketDef, layout: EslLayoutId) =>
@@ -57,23 +73,26 @@ const EslFontStep: React.FC<EslFontStepProps> = ({ value: saved, onChange, brand
   const tickLayout = (t: EslTicketDef) =>
     set({ layouts: { ...value.layouts, [t.key]: layoutOf(t) }, layoutsChosen: chosen(t) ? value.layoutsChosen.filter((k) => k !== t.key) : [...value.layoutsChosen, t.key] });
 
-  const label = (model: EslModel, t: EslTicketDef, height: number, opts: { layout?: EslLayoutId; fontFamily?: string; multi?: boolean; maxWidth?: number } = {}) => (
-    <div style={{ width: eslWidthAt(model, height), maxWidth: '100%' }}>
-      <EslLabel
-        model={model}
-        mode={t.mode}
-        style={t.style}
-        header={t.header}
-        fontFamily={opts.fontFamily ?? font.family}
-        layout={opts.layout ?? layoutOf(t)}
-        logoUrl={brand.logoUrl}
-        product={SAMPLE_PRODUCTS[t.mode === 'promo' ? 0 : 1]}
-        products={opts.multi ? SAMPLE_PRODUCTS.slice(0, 4) : undefined}
-        maxHeight={height}
-        maxWidth={opts.maxWidth}
-      />
-    </div>
-  );
+  const label = (model: EslModel, t: EslTicketDef | undefined, height: number, opts: { layout?: EslLayoutId; fontFamily?: string; multi?: boolean; maxWidth?: number } = {}) => {
+    if (!t) return null;
+    return (
+      <div style={{ width: eslWidthAt(model, height), maxWidth: '100%' }}>
+        <EslLabel
+          model={model}
+          mode={t.mode}
+          style={t.style}
+          header={t.header}
+          fontFamily={opts.fontFamily ?? font.family}
+          layout={opts.layout ?? layoutOf(t)}
+          logoUrl={brand.logoUrl}
+          product={SAMPLE_PRODUCTS[t.mode === 'promo' ? 0 : 1]}
+          products={opts.multi ? SAMPLE_PRODUCTS.slice(0, 4) : undefined}
+          maxHeight={height}
+          maxWidth={opts.maxWidth}
+        />
+      </div>
+    );
+  };
 
   const errorText = !fontChosen
     ? 'Tick the circle under a font to choose it.'
@@ -121,11 +140,13 @@ const EslFontStep: React.FC<EslFontStepProps> = ({ value: saved, onChange, brand
         <p className={card.sectionIntro}>
           The layout decides where the product, price and offer sit. Each ticket is shown on the ESL design you picked in the last step.
         </p>
-        <TicketTabs
-          tickets={tickets.map((t) => ({ key: t.key, name: t.name, promo: t.mode === 'promo', ticked: chosen(t) }))}
-          activeKey={active.key}
-          onChange={setActiveKey}
-        />
+        {tickets.length > 1 && (
+          <TicketTabs
+            tickets={tickets.map((t) => ({ key: t.key, name: t.name, promo: t.mode === 'promo', ticked: chosen(t) }))}
+            activeKey={active.key}
+            onChange={setActiveKey}
+          />
+        )}
         <Carousel
           key={active.key}
           items={active.layouts}

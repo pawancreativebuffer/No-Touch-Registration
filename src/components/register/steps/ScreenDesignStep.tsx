@@ -5,6 +5,7 @@ import card from '../StepCard.module.css';
 import form from '../../ui/Form.module.css';
 import choice from '../ui/Choice.module.css';
 import bg from './BackgroundStep.module.css';
+import layoutTabs from './FontLayoutStep.module.css';
 import styles from './ScreenDesignStep.module.css';
 import Carousel from '../ui/Carousel';
 import ScreenContent, { SCREEN_STYLES, screenWidthAt } from '../ui/ScreenContent';
@@ -24,16 +25,19 @@ interface ScreenDesignStepProps {
   onBack: () => void;
   onNext: () => void;
   nextLabel: string;
+  targetMode?: 'everyday' | 'promo';
 }
 
 type Orientation = 'portrait' | 'landscape';
+
+const EVERYDAY_HEADER_OPTIONS = ['Everyday Value', 'Great Price', 'Core Range'];
 
 const CAROUSEL_HEIGHT = 220;
 const AI_MS = 1400;
 const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
 
 /** Design for Digital Screen backgrounds, laid out like the Paper background steps */
-const ScreenDesignStep: React.FC<ScreenDesignStepProps> = ({ value: saved, onChange, brand, onBack, onNext, nextLabel }) => {
+const ScreenDesignStep: React.FC<ScreenDesignStepProps> = ({ value: saved, onChange, brand, onBack, onNext, nextLabel, targetMode }) => {
   // Older saved state may not have the newer fields
   const value: ScreenSetup = {
     ...saved,
@@ -44,10 +48,10 @@ const ScreenDesignStep: React.FC<ScreenDesignStepProps> = ({ value: saved, onCha
     aiTypes: saved.aiTypes ?? [],
     everydayUpload: saved.everydayUpload ?? {},
     typeUploads: saved.typeUploads ?? {},
+    everydayHeader: saved.everydayHeader || 'Everyday Value',
   };
   const [showErrors, setShowErrors] = useState(false);
   const [openType, setOpenType] = useState<PromoTypeId | null>(PROMO_TYPES[0].id);
-  const [viewKey, setViewKey] = useState('everyday');
   const [aiBusy, setAiBusy] = useState<string | null>(null);
   const [aiResults, setAiResults] = useState<Record<string, string>>({});
   const [uploadError, setUploadError] = useState('');
@@ -58,25 +62,35 @@ const ScreenDesignStep: React.FC<ScreenDesignStepProps> = ({ value: saved, onCha
   // Designs are shown on the first non-bar screen chosen, so the carousels stay readable
   const designModel = models.find((m) => m.shape !== 'bar') ?? models[0];
   const need = screenArtNeeds(value);
-  const tickets = screenTickets(value);
+  const allTickets = screenTickets(value);
+  const tickets = React.useMemo(() => {
+    if (targetMode === 'everyday') return allTickets.filter((t) => t.mode === 'everyday');
+    if (targetMode === 'promo') return allTickets.filter((t) => t.mode === 'promo');
+    return allTickets;
+  }, [allTickets, targetMode]);
+
+  const [viewKey, setViewKey] = useState(() => (targetMode === 'promo' ? (tickets[0]?.key || 'special') : 'everyday'));
   const viewing = tickets.find((t) => t.key === viewKey) ?? tickets[0];
 
-  const screen = (model: ScreenModel, t: Pick<ScreenTicketDef, 'mode' | 'style' | 'header' | 'upload'>, height: number, maxWidth?: number) => (
-    <div style={{ width: Math.min(screenWidthAt(model, height), maxWidth ?? Infinity), maxWidth: '100%' }}>
-      <ScreenContent
-        model={model}
-        mode={t.mode}
-        style={t.style}
-        header={t.header}
-        {...brandColours(brand, t.mode)}
-        logoUrl={brand.logoUrl}
-        upload={t.upload}
-        blank
-        maxHeight={height}
-        maxWidth={maxWidth}
-      />
-    </div>
-  );
+  const screen = (model: ScreenModel, t: Pick<ScreenTicketDef, 'mode' | 'style' | 'header' | 'upload'> | undefined, height: number, maxWidth?: number) => {
+    if (!t) return null;
+    return (
+      <div style={{ width: Math.min(screenWidthAt(model, height), maxWidth ?? Infinity), maxWidth: '100%' }}>
+        <ScreenContent
+          model={model}
+          mode={t.mode}
+          style={t.style}
+          header={t.header}
+          {...brandColours(brand, t.mode)}
+          logoUrl={brand.logoUrl}
+          upload={t.upload}
+          blank
+          maxHeight={height}
+          maxWidth={maxWidth}
+        />
+      </div>
+    );
+  };
   const designPreview = (mode: 'everyday' | 'promo', style: number, header: string) =>
     screen(designModel, { mode, style, header }, CAROUSEL_HEIGHT, 560);
 
@@ -240,23 +254,52 @@ const ScreenDesignStep: React.FC<ScreenDesignStepProps> = ({ value: saved, onCha
   const promosReady = screenPromoTypes(value).length > 0;
   const everydayReady =
     value.mode === 'upload' ? uploadComplete(value, value.everydayUpload) : value.mode === 'ai' ? value.aiDone : value.everydayChosen;
-  const ready = everydayReady && promosReady;
-  const errorText = !everydayReady
-    ? value.mode === 'upload'
-      ? 'Upload your Everyday screen artwork.'
-      : value.mode === 'ai'
-        ? 'Build your Everyday screen design with AI.'
-        : 'Tick an Everyday screen design.'
-    : value.mode === 'upload'
-      ? 'Upload the artwork for at least one promotion.'
-      : value.mode === 'ai'
-        ? 'Build at least one promotion with AI.'
-        : 'Tick a design for at least one promotion.';
+  const ready = targetMode === 'everyday'
+    ? everydayReady
+    : targetMode === 'promo'
+      ? promosReady
+      : (everydayReady && promosReady);
+  const errorText = targetMode === 'everyday'
+    ? (!everydayReady
+      ? (value.mode === 'upload'
+        ? 'Upload your Everyday screen artwork.'
+        : value.mode === 'ai'
+          ? 'Build your Everyday screen design with AI.'
+          : 'Tick an Everyday screen design.')
+      : '')
+    : targetMode === 'promo'
+      ? (!promosReady
+        ? (value.mode === 'upload'
+          ? 'Upload the artwork for at least one promotion.'
+          : value.mode === 'ai'
+            ? 'Build at least one promotion with AI.'
+            : 'Tick a design for at least one promotion.')
+        : '')
+      : (!everydayReady
+        ? (value.mode === 'upload'
+          ? 'Upload your Everyday screen artwork.'
+          : value.mode === 'ai'
+            ? 'Build your Everyday screen design with AI.'
+            : 'Tick an Everyday screen design.')
+        : value.mode === 'upload'
+          ? 'Upload the artwork for at least one promotion.'
+          : value.mode === 'ai'
+            ? 'Build at least one promotion with AI.'
+            : 'Tick a design for at least one promotion.');
 
   const handleNext = () => {
     if (!ready) {
       setShowErrors(true);
       return;
+    }
+    if (targetMode === 'promo' || targetMode === undefined) {
+      const updatedStyles = { ...value.typeStyles };
+      value.promoTypes.forEach((t) => {
+        if (updatedStyles[t] === undefined) {
+          updatedStyles[t] = screenStyleOf(value, t);
+        }
+      });
+      onChange({ ...value, typeStyles: updatedStyles });
     }
     onNext();
   };
@@ -306,133 +349,170 @@ const ScreenDesignStep: React.FC<ScreenDesignStepProps> = ({ value: saved, onCha
 
       {value.mode === 'select' && (
         <>
-          <section className={card.section}>
-            <h3 className={card.sectionTitle}>Select your Everyday screen design</h3>
-            <p className={card.sectionIntro}>One design for all your Everyday content. Your logo and colours come from the Your brand step.</p>
-            <Carousel
-              items={SCREEN_STYLES.everyday.map((_, i) => i)}
-              index={value.everydayStyle}
-              onIndexChange={(everydayStyle) => set({ everydayStyle, everydayChosen: false })}
-              selected={value.everydayChosen}
-              onSelect={() => set({ everydayChosen: !value.everydayChosen })}
-              renderItem={(s) => designPreview('everyday', s, EVERYDAY_HEADER)}
-              label="everyday screen design"
-              height={CAROUSEL_HEIGHT}
-            />
-            <p className={bg.accCaption}>
-              <strong>{SCREEN_STYLES.everyday[value.everydayStyle]}</strong>. {value.everydayChosen ? 'Everyday design is chosen.' : 'Tick the circle to choose it.'}
-            </p>
-          </section>
+          {targetMode !== 'promo' && (
+            <section className={card.section}>
+              <div className={layoutTabs.headerOptions}>
+                {EVERYDAY_HEADER_OPTIONS.map((headerText) => {
+                  const activeHeader = value.everydayHeader || 'Everyday Value';
+                  const isSelected = activeHeader.toLowerCase() === headerText.toLowerCase();
+                  return (
+                    <div
+                      key={headerText}
+                      className={`${layoutTabs.headerCard} ${isSelected ? layoutTabs.headerCardActive : ''}`}
+                      onClick={() => set({ everydayHeader: headerText })}
+                    >
+                      <div className={layoutTabs.headerCardRadio}>
+                        <div className={`${layoutTabs.radioCircle} ${isSelected ? layoutTabs.radioCircleActive : ''}`}>
+                          {isSelected && <div className={layoutTabs.radioDot} />}
+                        </div>
+                      </div>
+                      <div
+                        className={layoutTabs.headerBadge}
+                        style={isSelected ? { backgroundColor: brand.colour1 || '#eb2771', color: brand.colour2 || '#ffffff' } : undefined}
+                      >
+                        <span>{headerText}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <h3 className={card.sectionTitle}>Select your Everyday screen design</h3>
+              <p className={card.sectionIntro}>One design for all your Everyday content. Your logo and colours come from the Your brand step.</p>
+              <Carousel
+                items={SCREEN_STYLES.everyday.map((_, i) => i)}
+                index={value.everydayStyle}
+                onIndexChange={(everydayStyle) => set({ everydayStyle, everydayChosen: false })}
+                selected={value.everydayChosen}
+                onSelect={() => set({ everydayChosen: !value.everydayChosen })}
+                renderItem={(s) => designPreview('everyday', s, value.everydayHeader || EVERYDAY_HEADER)}
+                label="everyday screen design"
+                height={CAROUSEL_HEIGHT}
+              />
+              <p className={bg.accCaption}>
+                <strong>{SCREEN_STYLES.everyday[value.everydayStyle]}</strong>. {value.everydayChosen ? 'Everyday design is chosen.' : 'Tick the circle to choose it.'}
+              </p>
+            </section>
+          )}
 
-          {promoAccordion(
-            'Select your Promotional screen designs',
-            'One design for each promotion. Open a promotion, slide to the design you like and tick it to add it.',
-            (id) => ({
-              done: value.promoTypes.includes(id),
-              text: value.promoTypes.includes(id) ? `Added · ${SCREEN_STYLES.promo[screenStyleOf(value, id)]} design` : 'Not added',
-            }),
-            (id) => {
-              const t = PROMO_TYPES.find((x) => x.id === id)!;
-              const style = screenStyleOf(value, id);
-              const added = value.promoTypes.includes(id);
-              return (
-                <>
-                  <Carousel
-                    items={SCREEN_STYLES.promo.map((_, i) => i)}
-                    index={style}
-                    onIndexChange={(i) => moveStyle(id, i)}
-                    selected={added}
-                    onSelect={() => tickType(id)}
-                    renderItem={(s) => designPreview('promo', s, t.header)}
-                    label={`${t.name} screen design`}
-                    height={CAROUSEL_HEIGHT}
-                  />
-                  <p className={bg.accCaption}>
-                    <strong>{SCREEN_STYLES.promo[style]}</strong>
-                    {style === t.style && ' · Recommended'}. {added ? `${t.name} is added.` : `Tick the circle to add ${t.name}.`}
-                  </p>
-                </>
-              );
-            },
+          {targetMode !== 'everyday' && (
+            promoAccordion(
+              'Select your Promotional screen designs',
+              'One design for each promotion. Open a promotion, slide to the design you like and tick it to add it.',
+              (id) => ({
+                done: value.promoTypes.includes(id),
+                text: value.promoTypes.includes(id) ? `Added · ${SCREEN_STYLES.promo[screenStyleOf(value, id)]} design` : 'Not added',
+              }),
+              (id) => {
+                const t = PROMO_TYPES.find((x) => x.id === id)!;
+                const style = screenStyleOf(value, id);
+                const added = value.promoTypes.includes(id);
+                return (
+                  <>
+                    <Carousel
+                      items={SCREEN_STYLES.promo.map((_, i) => i)}
+                      index={style}
+                      onIndexChange={(i) => moveStyle(id, i)}
+                      selected={added}
+                      onSelect={() => tickType(id)}
+                      renderItem={(s) => designPreview('promo', s, t.header)}
+                      label={`${t.name} screen design`}
+                      height={CAROUSEL_HEIGHT}
+                    />
+                    <p className={bg.accCaption}>
+                      <strong>{SCREEN_STYLES.promo[style]}</strong>
+                      {style === t.style && ' · Recommended'}. {added ? `${t.name} is added.` : `Tick the circle to add ${t.name}.`}
+                    </p>
+                  </>
+                );
+              },
+            )
           )}
         </>
       )}
 
       {value.mode === 'ai' && (
         <>
-          <section className={card.section}>
-            <h3 className={card.sectionTitle}>Build your Everyday screen design with AI</h3>
-            <p className={card.sectionIntro}>Describe the look you want. Your logo and colours come from the Your brand step.</p>
-            {aiBox(
-              'Let AI build your Everyday screen design',
-              'For example a texture or style, such as kraft paper, brick or clean.',
-              value.aiPrompt,
-              (aiPrompt) => set({ aiPrompt }),
-              buildEveryday,
-              aiBusy === 'everyday',
-              value.aiDone,
-            )}
-            {aiBusy === 'everyday' ? (
-              <p className={bg.aiResult} role="status">
-                <span className={bg.spinner} /> Building your Everyday design...
-              </p>
-            ) : (
-              value.aiDone && aiResults.everyday && <p className={bg.aiResult}>{aiResults.everyday}</p>
-            )}
-          </section>
+          {targetMode !== 'promo' && (
+            <section className={card.section}>
+              <h3 className={card.sectionTitle}>Build your Everyday screen design with AI</h3>
+              <p className={card.sectionIntro}>Describe the look you want. Your logo and colours come from the Your brand step.</p>
+              {aiBox(
+                'Let AI build your Everyday screen design',
+                'For example a texture or style, such as kraft paper, brick or clean.',
+                value.aiPrompt,
+                (aiPrompt) => set({ aiPrompt }),
+                buildEveryday,
+                aiBusy === 'everyday',
+                value.aiDone,
+              )}
+              {aiBusy === 'everyday' ? (
+                <p className={bg.aiResult} role="status">
+                  <span className={bg.spinner} /> Building your Everyday design...
+                </p>
+              ) : (
+                value.aiDone && aiResults.everyday && <p className={bg.aiResult}>{aiResults.everyday}</p>
+              )}
+            </section>
+          )}
 
-          {promoAccordion(
-            'Build your Promotional screen designs with AI',
-            "Open a promotion, describe the look you want and click Build with AI. Only that promotion's design is built.",
-            (id) => {
-              const built = value.aiTypes.includes(id) && value.promoTypes.includes(id);
-              return { done: built, text: aiBusy === id ? 'Building...' : built ? `Added · ${SCREEN_STYLES.promo[screenStyleOf(value, id)]} design` : 'Not added' };
-            },
-            (id) => {
-              const t = PROMO_TYPES.find((x) => x.id === id)!;
-              const built = value.aiTypes.includes(id) && value.promoTypes.includes(id);
-              return (
-                <>
-                  {aiBox(
-                    `Let AI build your ${t.name} screen design`,
-                    `Describe the look you want for ${t.name}, such as gold, frame or slant.`,
-                    value.typePrompts[id] ?? '',
-                    (v) => set({ typePrompts: { ...value.typePrompts, [id]: v } }),
-                    () => buildPromo(id),
-                    aiBusy === id,
-                    built,
-                  )}
-                  {aiBusy === id ? (
-                    <p className={bg.aiResult} role="status">
-                      <span className={bg.spinner} /> Building your {t.name} design...
-                    </p>
-                  ) : (
-                    built && aiResults[id] && <p className={bg.aiResult}>{aiResults[id]}</p>
-                  )}
-                </>
-              );
-            },
+          {targetMode !== 'everyday' && (
+            promoAccordion(
+              'Build your Promotional screen designs with AI',
+              "Open a promotion, describe the look you want and click Build with AI. Only that promotion's design is built.",
+              (id) => {
+                const built = value.aiTypes.includes(id) && value.promoTypes.includes(id);
+                return { done: built, text: aiBusy === id ? 'Building...' : built ? `Added · ${SCREEN_STYLES.promo[screenStyleOf(value, id)]} design` : 'Not added' };
+              },
+              (id) => {
+                const t = PROMO_TYPES.find((x) => x.id === id)!;
+                const built = value.aiTypes.includes(id) && value.promoTypes.includes(id);
+                return (
+                  <>
+                    {aiBox(
+                      `Let AI build your ${t.name} screen design`,
+                      `Describe the look you want for ${t.name}, such as gold, frame or slant.`,
+                      value.typePrompts[id] ?? '',
+                      (v) => set({ typePrompts: { ...value.typePrompts, [id]: v } }),
+                      () => buildPromo(id),
+                      aiBusy === id,
+                      built,
+                    )}
+                    {aiBusy === id ? (
+                      <p className={bg.aiResult} role="status">
+                        <span className={bg.spinner} /> Building your {t.name} design...
+                      </p>
+                    ) : (
+                      built && aiResults[id] && <p className={bg.aiResult}>{aiResults[id]}</p>
+                    )}
+                  </>
+                );
+              },
+            )
           )}
         </>
       )}
 
       {value.mode === 'upload' && (
         <>
-          <section className={card.section}>
-            <h3 className={card.sectionTitle}>Upload your Everyday screen artwork</h3>
-            <p className={card.sectionIntro}>Upload artwork or video for your Everyday content. It is shown on your screens as it is.</p>
-            {uploadBoxes('everyday')}
-          </section>
+          {targetMode !== 'promo' && (
+            <section className={card.section}>
+              <h3 className={card.sectionTitle}>Upload your Everyday screen artwork</h3>
+              <p className={card.sectionIntro}>Upload artwork or video for your Everyday content. It is shown on your screens as it is.</p>
+              {uploadBoxes('everyday')}
+            </section>
+          )}
 
-          {promoAccordion(
-            'Upload your Promotional screen artwork',
-            'Open a promotion and upload its artwork or video.',
-            (id) => {
-              const u = value.typeUploads[id];
-              const done = uploadComplete(value, u);
-              return { done, text: done ? 'Added · uploaded' : u?.portraitUrl || u?.landscapeUrl ? 'Upload incomplete' : 'Not added' };
-            },
-            (id) => uploadBoxes(id),
+          {targetMode !== 'everyday' && (
+            promoAccordion(
+              'Upload your Promotional screen artwork',
+              'Open a promotion and upload its artwork or video.',
+              (id) => {
+                const u = value.typeUploads[id];
+                const done = uploadComplete(value, u);
+                return { done, text: done ? 'Added · uploaded' : u?.portraitUrl || u?.landscapeUrl ? 'Upload incomplete' : 'Not added' };
+              },
+              (id) => uploadBoxes(id),
+            )
           )}
           {uploadError && <p className={form.error}>{uploadError}</p>}
         </>
@@ -441,11 +521,13 @@ const ScreenDesignStep: React.FC<ScreenDesignStepProps> = ({ value: saved, onCha
       <section className={card.section}>
         <h3 className={card.sectionTitle}>How it looks on your screens</h3>
         <p className={card.sectionIntro}>Choose Everyday or a promotion to see its design on each screen you chose.</p>
-        <TicketTabs tickets={tickets.map((t) => ({ key: t.key, name: t.name, promo: t.mode === 'promo' }))} activeKey={viewing.key} onChange={setViewKey} />
+        {tickets.length > 1 && (
+          <TicketTabs tickets={tickets.map((t) => ({ key: t.key, name: t.name, promo: t.mode === 'promo' }))} activeKey={viewing?.key ?? tickets[0]?.key} onChange={setViewKey} />
+        )}
         <div className={styles.preview}>
           {models.map((m) => (
             <figure key={m.id} className={m.shape === 'portrait' ? styles.portraitItem : styles.wideItem}>
-              {screen(m, viewing, m.shape === 'portrait' ? 300 : m.shape === 'wide' ? 170 : 60)}
+              {screen(m, viewing ?? tickets[0], m.shape === 'portrait' ? 300 : m.shape === 'wide' ? 170 : 60)}
               <figcaption>
                 {m.size} {m.model} · {m.resolution} px
               </figcaption>

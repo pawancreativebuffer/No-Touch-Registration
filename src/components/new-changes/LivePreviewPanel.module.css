@@ -1,0 +1,102 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  flex-shrink: 0;
+  gap: 16px;
+}
+
+.card {
+  background: #fdf2f7;
+  border: 1px solid #fce1ed;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: none;
+}
+
+.kicker {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #8b8f9e;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--secondary, #2b253e);
+}
+
+.sub {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.tabs {
+  display: flex;
+  background: #ffffff;
+  padding: 3px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  gap: 2px;
+}
+
+.tab {
+  flex: 1;
+  padding: 6px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  border-radius: 6px;
+  text-align: center;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.tab:hover {
+  color: var(--secondary, #2b253e);
+}
+
+.tabActive {
+  background: var(--secondary, #2b253e);
+  color: #ffffff !important;
+}
+
+.previewContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  min-height: 260px;
+  overflow: hidden;
+}
+
+.ticketWrap {
+  width: 100%;
+  max-width: 220px;
+  transition: transform 0.2s ease;
+}
+
+.ticketWrap:hover {
+  transform: scale(1.02);
+}
+
+.caption {
+  font-size: 11px;
+  color: #9ca3af;
+  text-align: center;
+  margin-top: 4px;
+}

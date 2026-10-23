@@ -41,11 +41,13 @@ export const ESL_MODELS: EslModel[] = [
 export const findEsl = (id: string) => ESL_MODELS.find((m) => m.id === id);
 
 /** Text layouts on an ESL: where the product, price and offer sit */
-export type EslLayoutId = 'price' | 'product' | 'save' | 'percent' | 'wasnow' | 'multibuy' | 'members' | 'new';
+export type EslLayoutId = 'price' | 'product' | 'split' | 'boxed' | 'save' | 'percent' | 'wasnow' | 'multibuy' | 'members' | 'new';
 
 export const ESL_LAYOUTS: Record<EslLayoutId, { name: string; description: string }> = {
-  price: { name: 'Price focus', description: 'Product name, big price and unit price.' },
-  product: { name: 'Product focus', description: 'Bigger product name, smaller price.' },
+  price: { name: 'Price focus', description: 'Product name, big centered price and unit price.' },
+  product: { name: 'Product details', description: 'Left-aligned product title with metadata pills and divider.' },
+  split: { name: 'Side-by-side split', description: 'Product info on left, vertical divider, large price on right.' },
+  boxed: { name: 'High-contrast badge', description: 'Inverted solid price block for maximum shelf visibility.' },
   save: { name: 'Price and saving', description: 'Offer price with the saving underneath.' },
   percent: { name: 'Percent off', description: 'Percentage off above the offer price.' },
   wasnow: { name: 'Was and now', description: 'Offer price with the was price.' },
@@ -54,7 +56,7 @@ export const ESL_LAYOUTS: Record<EslLayoutId, { name: string; description: strin
   new: { name: 'New product', description: 'New badge above the price.' },
 };
 
-export const ESL_EVERYDAY_LAYOUTS: EslLayoutId[] = ['price', 'product'];
+export const ESL_EVERYDAY_LAYOUTS: EslLayoutId[] = ['price', 'product', 'split', 'boxed'];
 export const ESL_PROMO_LAYOUTS: EslLayoutId[] = ['save', 'percent', 'wasnow', 'multibuy', 'members', 'new', 'price'];
 
 /** Recommended ESL design (promo style index) and layout for each promotion type */

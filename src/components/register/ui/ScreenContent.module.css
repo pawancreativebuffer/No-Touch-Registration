@@ -889,3 +889,37 @@
 .lProduct.portrait .price {
   font-size: 9.5cqh;
 }
+
+/* Screen boxed badge */
+.screenBoxedBadge {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--accent);
+  color: var(--accent-ink);
+  padding: 0.25em 0.7em;
+  border-radius: 0.25em;
+  gap: 0.1em;
+}
+
+.screenBoxedUnit {
+  font-size: 0.4em;
+  opacity: 0.9;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* Split layout on screens */
+.lSplit.bar .text,
+.lSplit.wide .text {
+  text-align: left;
+}
+
+/* Boxed layout on screens */
+.lBoxed .priceArea {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+

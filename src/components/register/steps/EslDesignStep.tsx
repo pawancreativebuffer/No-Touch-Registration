@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import card from '../StepCard.module.css';
 import choice from '../ui/Choice.module.css';
 import bg from './BackgroundStep.module.css';
+import tabs from './FontLayoutStep.module.css';
 import styles from './EslDesignStep.module.css';
 import Carousel from '../ui/Carousel';
 import EslLabel, { ESL_STYLES, eslWidthAt } from '../ui/EslLabel';
@@ -24,50 +25,81 @@ interface EslDesignStepProps {
   onBack: () => void;
   onNext: () => void;
   nextLabel: string;
+  targetMode?: 'everyday' | 'promo';
 }
+
+const EVERYDAY_HEADER_OPTIONS = ['Everyday Value', 'Great Price', 'Core Range'];
 
 const CAROUSEL_HEIGHT = 240;
 
 /** Design for ESL backgrounds: one Everyday design and a design per promotion, in black, white, red and yellow */
-const EslDesignStep: React.FC<EslDesignStepProps> = ({ value, onChange, brand, onBack, onNext, nextLabel }) => {
+const EslDesignStep: React.FC<EslDesignStepProps> = ({ value, onChange, brand, onBack, onNext, nextLabel, targetMode }) => {
   const [showErrors, setShowErrors] = useState(false);
-  const [openType, setOpenType] = useState<PromoTypeId | null>(null);
-  const [viewKey, setViewKey] = useState('everyday');
+  const [openType, setOpenType] = useState<PromoTypeId | null>(() => (targetMode === 'promo' ? (value.promoTypes[0] || 'special') : null));
+  const [viewKey, setViewKey] = useState(() => (targetMode === 'promo' ? (value.promoTypes[0] || 'special') : 'everyday'));
   const set = (patch: Partial<EslSetup>) => onChange({ ...value, ...patch });
 
   const lines = selectedEsls(value);
   const models = lines.length ? lines.map((l) => l.model) : ESL_MODELS.slice(0, 3);
   // Designs are shown on the first mid-size label the retailer chose
   const designModel = lines.find((l) => l.model.width >= 300)?.model ?? findEsl('zkc42q')!;
-  const tickets = eslTickets(value);
+  const allTickets = eslTickets(value);
+  const tickets = React.useMemo(() => {
+    if (targetMode === 'everyday') return allTickets.filter((t) => t.mode === 'everyday');
+    if (targetMode === 'promo') return allTickets.filter((t) => t.mode === 'promo');
+    return allTickets;
+  }, [allTickets, targetMode]);
+
   const viewing = tickets.find((t) => t.key === viewKey) ?? tickets[0];
 
-  const blankLabel = (model: EslModel, t: Pick<EslTicketDef, 'mode' | 'style' | 'header'>, height: number) => (
-    <div style={{ width: eslWidthAt(model, height), maxWidth: '100%' }}>
-      <EslLabel
-        model={model}
-        mode={t.mode}
-        style={t.style}
-        header={t.header}
-        fontFamily={TICKET_FONTS[value.fontIndex].family}
-        logoUrl={brand.logoUrl}
-        product={SAMPLE_PRODUCTS[0]}
-        blank
-        maxHeight={height}
-      />
-    </div>
-  );
+  const blankLabel = (model: EslModel, t: Pick<EslTicketDef, 'mode' | 'style' | 'header'> | undefined, height: number) => {
+    if (!t) return null;
+    return (
+      <div style={{ width: eslWidthAt(model, height), maxWidth: '100%' }}>
+        <EslLabel
+          model={model}
+          mode={t.mode}
+          style={t.style}
+          header={t.header}
+          fontFamily={TICKET_FONTS[value.fontIndex].family}
+          logoUrl={brand.logoUrl}
+          product={SAMPLE_PRODUCTS[0]}
+          blank
+          maxHeight={height}
+        />
+      </div>
+    );
+  };
 
   const moveStyle = (id: PromoTypeId, style: number) => set({ typeStyles: { ...value.typeStyles, [id]: style } });
   const tickType = (id: PromoTypeId) =>
     set({ promoTypes: value.promoTypes.includes(id) ? value.promoTypes.filter((x) => x !== id) : [...value.promoTypes, id] });
 
-  const ready = value.everydayChosen && value.promoTypes.length > 0;
-  const errorText = !value.everydayChosen ? 'Tick an Everyday ESL design.' : 'Tick a design for at least one promotion.';
+  const ready = targetMode === 'everyday'
+    ? value.everydayChosen
+    : targetMode === 'promo'
+      ? value.promoTypes.length > 0
+      : (value.everydayChosen && value.promoTypes.length > 0);
+
+  const errorText = targetMode === 'everyday'
+    ? (!value.everydayChosen ? 'Tick an Everyday ESL design.' : '')
+    : targetMode === 'promo'
+      ? (value.promoTypes.length === 0 ? 'Tick a design for at least one promotion.' : '')
+      : (!value.everydayChosen ? 'Tick an Everyday ESL design.' : 'Tick a design for at least one promotion.');
+
   const handleNext = () => {
     if (!ready) {
       setShowErrors(true);
       return;
+    }
+    if (targetMode === 'promo' || targetMode === undefined) {
+      const updatedStyles = { ...value.typeStyles };
+      value.promoTypes.forEach((t) => {
+        if (updatedStyles[t] === undefined) {
+          updatedStyles[t] = eslStyleOf(value, t);
+        }
+      });
+      onChange({ ...value, typeStyles: updatedStyles });
     }
     onNext();
   };
@@ -93,78 +125,109 @@ const EslDesignStep: React.FC<EslDesignStepProps> = ({ value, onChange, brand, o
         </section>
       )}
 
-      <section className={card.section}>
-        <h3 className={card.sectionTitle}>Everyday ESL design</h3>
-        <p className={card.sectionIntro}>One black and white design for all your Everyday labels. Red and yellow are kept for promotions.</p>
-        <Carousel
-          items={ESL_STYLES.everyday.map((_, i) => i)}
-          index={value.everydayStyle}
-          onIndexChange={(everydayStyle) => set({ everydayStyle, everydayChosen: false })}
-          selected={value.everydayChosen}
-          onSelect={() => set({ everydayChosen: !value.everydayChosen })}
-          renderItem={(s) => blankLabel(designModel, { mode: 'everyday', style: s, header: tickets[0].header }, CAROUSEL_HEIGHT)}
-          label="everyday ESL design"
-          height={CAROUSEL_HEIGHT}
-        />
-        <p className={bg.accCaption}>
-          <strong>{ESL_STYLES.everyday[value.everydayStyle]}</strong>. {value.everydayChosen ? 'Everyday design is chosen.' : 'Tick the circle to choose it.'}
-        </p>
-      </section>
-
-      <section className={card.section}>
-        <h3 className={card.sectionTitle}>Promotional ESL designs</h3>
-        <p className={card.sectionIntro}>One design for each promotion. Open a promotion, slide to the design you like and tick it to add it.</p>
-        <div className={bg.accordion}>
-          {PROMO_TYPES.map((t) => {
-            const open = openType === t.id;
-            const added = value.promoTypes.includes(t.id);
-            const style = eslStyleOf(value, t.id);
-            return (
-              <div key={t.id} className={`${bg.accItem} ${open ? bg.accOpen : ''}`}>
-                <button type="button" className={bg.accHead} aria-expanded={open} onClick={() => setOpenType(open ? null : t.id)}>
-                  <strong className={bg.accTitle}>{t.name}</strong>
-                  <span className={bg.accText}>{t.description}</span>
-                  <span className={`${bg.accStatus} ${added ? bg.accAdded : ''}`}>
-                    {added ? `Added · ${ESL_STYLES.promo[style]} design` : 'Not added'}
-                  </span>
-                  <span className={bg.chevron} aria-hidden="true" />
-                </button>
-                {open && (
-                  <div className={bg.accBody}>
-                    <Carousel
-                      items={promoIndexes}
-                      index={style}
-                      onIndexChange={(i) => moveStyle(t.id, i)}
-                      selected={added}
-                      onSelect={() => tickType(t.id)}
-                      renderItem={(s) => blankLabel(designModel, { mode: 'promo', style: s, header: t.header }, CAROUSEL_HEIGHT)}
-                      label={`${t.name} ESL design`}
-                      height={CAROUSEL_HEIGHT}
-                    />
-                    <p className={bg.accCaption}>
-                      <strong>{ESL_STYLES.promo[style]}</strong>
-                      {style === ESL_PROMO_DEFAULTS[t.id].style && ' · Recommended'}. {added ? `${t.name} is added.` : `Tick the circle to add ${t.name}.`}
-                    </p>
+      {targetMode !== 'promo' && (
+        <section className={card.section}>
+          <div className={tabs.headerOptions}>
+            {EVERYDAY_HEADER_OPTIONS.map((headerText) => {
+              const activeHeader = value.everydayHeader || 'Everyday Value';
+              const isSelected = activeHeader.toLowerCase() === headerText.toLowerCase();
+              return (
+                <div
+                  key={headerText}
+                  className={`${tabs.headerCard} ${isSelected ? tabs.headerCardActive : ''}`}
+                  onClick={() => set({ everydayHeader: headerText })}
+                >
+                  <div className={tabs.headerCardRadio}>
+                    <div className={`${tabs.radioCircle} ${isSelected ? tabs.radioCircleActive : ''}`}>
+                      {isSelected && <div className={tabs.radioDot} />}
+                    </div>
                   </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </section>
+                  <div
+                    className={tabs.headerBadge}
+                    style={isSelected ? { backgroundColor: brand.colour1 || '#eb2771', color: brand.colour2 || '#ffffff' } : undefined}
+                  >
+                    <span>{headerText}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <h3 className={card.sectionTitle}>Everyday ESL design</h3>
+          <p className={card.sectionIntro}>One black and white design for all your Everyday labels. Red and yellow are kept for promotions.</p>
+          <Carousel
+            items={ESL_STYLES.everyday.map((_, i) => i)}
+            index={value.everydayStyle}
+            onIndexChange={(everydayStyle) => set({ everydayStyle, everydayChosen: false })}
+            selected={value.everydayChosen}
+            onSelect={() => set({ everydayChosen: !value.everydayChosen })}
+            renderItem={(s) => blankLabel(designModel, { mode: 'everyday', style: s, header: value.everydayHeader || 'Everyday Value' }, CAROUSEL_HEIGHT)}
+            label="everyday ESL design"
+            height={CAROUSEL_HEIGHT}
+          />
+          <p className={bg.accCaption}>
+            <strong>{ESL_STYLES.everyday[value.everydayStyle]}</strong>. {value.everydayChosen ? 'Everyday design is chosen.' : 'Tick the circle to choose it.'}
+          </p>
+        </section>
+      )}
+
+      {targetMode !== 'everyday' && (
+        <section className={card.section}>
+          <h3 className={card.sectionTitle}>Promotional ESL designs</h3>
+          <p className={card.sectionIntro}>One design for each promotion. Open a promotion, slide to the design you like and tick it to add it.</p>
+          <div className={bg.accordion}>
+            {PROMO_TYPES.map((t) => {
+              const open = openType === t.id;
+              const added = value.promoTypes.includes(t.id);
+              const style = eslStyleOf(value, t.id);
+              return (
+                <div key={t.id} className={`${bg.accItem} ${open ? bg.accOpen : ''}`}>
+                  <button type="button" className={bg.accHead} aria-expanded={open} onClick={() => setOpenType(open ? null : t.id)}>
+                    <strong className={bg.accTitle}>{t.name}</strong>
+                    <span className={bg.accText}>{t.description}</span>
+                    <span className={`${bg.accStatus} ${added ? bg.accAdded : ''}`}>
+                      {added ? `Added · ${ESL_STYLES.promo[style]} design` : 'Not added'}
+                    </span>
+                    <span className={bg.chevron} aria-hidden="true" />
+                  </button>
+                  {open && (
+                    <div className={bg.accBody}>
+                      <Carousel
+                        items={promoIndexes}
+                        index={style}
+                        onIndexChange={(i) => moveStyle(t.id, i)}
+                        selected={added}
+                        onSelect={() => tickType(t.id)}
+                        renderItem={(s) => blankLabel(designModel, { mode: 'promo', style: s, header: t.header }, CAROUSEL_HEIGHT)}
+                        label={`${t.name} ESL design`}
+                        height={CAROUSEL_HEIGHT}
+                      />
+                      <p className={bg.accCaption}>
+                        <strong>{ESL_STYLES.promo[style]}</strong>
+                        {style === ESL_PROMO_DEFAULTS[t.id].style && ' · Recommended'}. {added ? `${t.name} is added.` : `Tick the circle to add ${t.name}.`}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       <section className={card.section}>
         <h3 className={card.sectionTitle}>How it looks on your ESLs</h3>
         <p className={card.sectionIntro}>Choose Everyday or a promotion to see its design on each ESL size you chose.</p>
-        <TicketTabs
-          tickets={tickets.map((t) => ({ key: t.key, name: t.name, promo: t.mode === 'promo' }))}
-          activeKey={viewing.key}
-          onChange={setViewKey}
-        />
+        {tickets.length > 1 && (
+          <TicketTabs
+            tickets={tickets.map((t) => ({ key: t.key, name: t.name, promo: t.mode === 'promo' }))}
+            activeKey={viewing?.key ?? tickets[0]?.key}
+            onChange={setViewKey}
+          />
+        )}
         <div className={styles.shelf}>
           {models.map((m) => (
             <figure key={m.id} className={styles.onShelf}>
-              {blankLabel(m, viewing, 60 + m.inches * 22)}
+              {blankLabel(m, viewing ?? tickets[0], 60 + m.inches * 22)}
               <figcaption>
                 {m.size} {m.model} · {m.resolution} px
               </figcaption>

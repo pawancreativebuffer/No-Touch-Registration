@@ -26,13 +26,14 @@ interface ScreenMotionStepProps {
   nextLabel: string;
   /** Font chosen once in Brand, Colours & Fonts; hides the font picker */
   brandFontIndex?: number;
+  targetMode?: 'everyday' | 'promo';
 }
 
 const CAROUSEL_HEIGHT = 220;
 const PREVIEW_HEIGHT: Record<ScreenModel['shape'], number> = { bar: 160, wide: 340, portrait: 520 };
 
 /** Font, a text layout per ticket, motion and Multi Product, previewed on each chosen screen. Laid out like the ESL font step. */
-const ScreenMotionStep: React.FC<ScreenMotionStepProps> = ({ value: saved, onChange, brand, onBack, onNext, nextLabel, brandFontIndex }) => {
+const ScreenMotionStep: React.FC<ScreenMotionStepProps> = ({ value: saved, onChange, brand, onBack, onNext, nextLabel, brandFontIndex, targetMode }) => {
   // Older saved state may not have the newer fields
   const value: ScreenSetup = {
     ...saved,
@@ -40,9 +41,17 @@ const ScreenMotionStep: React.FC<ScreenMotionStepProps> = ({ value: saved, onCha
     fontChosen: saved.fontChosen ?? false,
     layouts: saved.layouts ?? {},
     layoutsChosen: saved.layoutsChosen ?? [],
+    everydayHeader: saved.everydayHeader || 'Everyday Value',
   };
+  const allTickets = screenTickets(value);
+  const tickets = React.useMemo(() => {
+    if (targetMode === 'everyday') return allTickets.filter((t) => t.mode === 'everyday');
+    if (targetMode === 'promo') return allTickets.filter((t) => t.mode === 'promo');
+    return allTickets;
+  }, [allTickets, targetMode]);
+
   const [screenId, setScreenId] = useState('');
-  const [activeKey, setActiveKey] = useState('everyday');
+  const [activeKey, setActiveKey] = useState(() => (targetMode === 'promo' ? (tickets[0]?.key || 'special') : 'everyday'));
   const [showErrors, setShowErrors] = useState(false);
   const fontRef = useRef<HTMLElement>(null);
   const layoutRef = useRef<HTMLElement>(null);
@@ -55,15 +64,15 @@ const ScreenMotionStep: React.FC<ScreenMotionStepProps> = ({ value: saved, onCha
   const models = lines.length ? lines.map((l) => l.model) : [findScreen('zkl290')!];
   const designModel = models.find((m) => m.shape !== 'bar') ?? models[0];
   const model = models.find((m) => m.id === screenId) ?? models[0];
-  const tickets = screenTickets(value);
   const active = tickets.find((t) => t.key === activeKey) ?? tickets[0];
 
   const layoutOf = (t: ScreenTicketDef) => {
+    if (!t) return 'price';
     const l = value.layouts[t.key];
     return l && t.layouts.includes(l) ? l : t.recommended;
   };
   // Uploaded artwork is shown as it is, so it needs no text layout
-  const chosen = (t: ScreenTicketDef) => !!t.upload || value.layoutsChosen.includes(t.key);
+  const chosen = (t: ScreenTicketDef) => !t || !!t.upload || value.layoutsChosen.includes(t.key);
   const missing = tickets.filter((t) => !chosen(t));
 
   const moveLayout = (t: ScreenTicketDef, layout: EslLayoutId) =>
@@ -76,15 +85,17 @@ const ScreenMotionStep: React.FC<ScreenMotionStepProps> = ({ value: saved, onCha
 
   const screen = (
     m: ScreenModel,
-    t: ScreenTicketDef,
+    t: ScreenTicketDef | undefined,
     height: number,
     opts: { layout?: EslLayoutId; fontFamily?: string; live?: boolean; maxWidth?: number } = {},
-  ) => (
-    <div style={{ width: Math.min(screenWidthAt(m, height), opts.maxWidth ?? Infinity), maxWidth: '100%' }}>
-      <ScreenContent
-        model={m}
-        mode={t.mode}
-        style={t.style}
+  ) => {
+    if (!t) return null;
+    return (
+      <div style={{ width: Math.min(screenWidthAt(m, height), opts.maxWidth ?? Infinity), maxWidth: '100%' }}>
+        <ScreenContent
+          model={m}
+          mode={t.mode}
+          style={t.style}
         header={t.header}
         {...brandColours(brand, t.mode)}
         logoUrl={brand.logoUrl}
@@ -99,6 +110,7 @@ const ScreenMotionStep: React.FC<ScreenMotionStepProps> = ({ value: saved, onCha
       />
     </div>
   );
+};
 
   const segmented = <T extends string>(options: { id: T; label: string }[], current: T, onPick: (v: T) => void) => (
     <div className={choice.segmented}>
@@ -156,11 +168,13 @@ const ScreenMotionStep: React.FC<ScreenMotionStepProps> = ({ value: saved, onCha
         <p className={card.sectionIntro}>
           The layout decides where the product, price and offer sit. Each ticket is shown on the screen design you picked in the last step.
         </p>
-        <TicketTabs
-          tickets={tickets.map((t) => ({ key: t.key, name: t.name, promo: t.mode === 'promo', ticked: chosen(t) }))}
-          activeKey={active.key}
-          onChange={setActiveKey}
-        />
+        {tickets.length > 1 && (
+          <TicketTabs
+            tickets={tickets.map((t) => ({ key: t.key, name: t.name, promo: t.mode === 'promo', ticked: chosen(t) }))}
+            activeKey={active.key}
+            onChange={setActiveKey}
+          />
+        )}
         {active.upload ? (
           <p className={styles.uploadNote}>Your {active.name} content is uploaded artwork, so it is shown as it is and needs no text layout.</p>
         ) : (

@@ -9,28 +9,43 @@ import TicketBackground from '../ui/TicketBackground';
 import PaperTicket, { TicketData } from '../ui/PaperTicket';
 import StepFooter from '../ui/StepFooter';
 import TicketTabs from '../ui/TicketTabs';
-import { TICKET_LAYOUTS, TicketLayoutId } from '../data';
+import { PROMO_LAYOUTS, PROMO_TYPE_LAYOUT, TICKET_LAYOUTS, TicketLayoutId } from '../data';
 import { TICKET_FONTS } from '../fonts';
 import { Orientation, PaperTicketDef, paperTickets } from '../paperTickets';
-import { BackgroundSetup, BrandSetup, FontSetup } from '../state';
+import { BackgroundSetup, BrandSetup, FontSetup, brandColours } from '../state';
 
 interface FontLayoutStepProps {
   value: FontSetup;
   onChange: (value: FontSetup) => void;
   /** Backgrounds picked on the Everyday and Promotional background steps */
   everyday: BackgroundSetup;
+  onChangeEveryday?: (value: BackgroundSetup) => void;
   promo: BackgroundSetup;
   brand: BrandSetup;
   onBack: () => void;
   onNext: () => void;
   nextLabel: string;
   onOrderStock?: () => void;
+  targetMode?: 'everyday' | 'promo';
 }
 
 /** Sample product shown on the layout cards */
 const SAMPLE_DATA: TicketData = { description: 'Fresh Bananas per kg', unit: '$4.20 / kg', price: 3.49, was: 4.2, qty: 2, footer: 'Available while stocks last' };
 
-const FontLayoutStep: React.FC<FontLayoutStepProps> = ({ value: saved, onChange, everyday, promo, brand, onBack, onNext, nextLabel }) => {
+const EVERYDAY_HEADER_OPTIONS = ['Everyday Value', 'Great Price', 'Core Range'];
+
+const FontLayoutStep: React.FC<FontLayoutStepProps> = ({
+  value: saved,
+  onChange,
+  everyday,
+  onChangeEveryday,
+  promo,
+  brand,
+  onBack,
+  onNext,
+  nextLabel,
+  targetMode,
+}) => {
   // Older saved state may not have the newer fields
   const value: FontSetup = {
     ...saved,
@@ -39,12 +54,40 @@ const FontLayoutStep: React.FC<FontLayoutStepProps> = ({ value: saved, onChange,
     ticket: { ...saved.ticket, was: saved.ticket.was ?? '45' },
   };
   const [showErrors, setShowErrors] = useState(false);
-  const [activeKey, setActiveKey] = useState('everyday');
   const fontRef = useRef<HTMLElement>(null);
   const layoutRef = useRef<HTMLElement>(null);
   const font = TICKET_FONTS[value.fontIndex];
 
-  const tickets = paperTickets(brand, everyday, promo);
+  const allTickets = paperTickets(brand, everyday, promo);
+  const tickets = React.useMemo(() => {
+    if (targetMode === 'everyday') {
+      return allTickets.filter((t) => t.key === 'everyday');
+    }
+    if (targetMode === 'promo') {
+      const p = allTickets.filter((t) => !!t.promoType);
+      if (p.length > 0) return p;
+      const pc = brandColours(brand, 'promo');
+      const fallback: PaperTicketDef = {
+        key: 'special',
+        name: 'Special',
+        promoType: 'special',
+        bg: () => ({
+          type: 'design',
+          kind: 'promo',
+          variant: 0,
+          header: 'Special',
+          ...pc,
+          logoUrl: brand.logoUrl,
+        }),
+        layouts: PROMO_LAYOUTS,
+        recommended: PROMO_TYPE_LAYOUT['special'] ?? 'standard',
+      };
+      return [fallback];
+    }
+    return allTickets;
+  }, [allTickets, targetMode, brand]);
+
+  const [activeKey, setActiveKey] = useState<string>(() => (targetMode === 'promo' ? (tickets[0]?.key ?? 'special') : 'everyday'));
   const active = tickets.find((t) => t.key === activeKey) ?? tickets[0];
   const layoutOf = (t: PaperTicketDef) => value.layouts[t.key] ?? t.recommended;
   const chosen = (t: PaperTicketDef) => value.layoutsChosen.includes(t.key);
@@ -62,16 +105,18 @@ const FontLayoutStep: React.FC<FontLayoutStepProps> = ({ value: saved, onChange,
     <PaperTicket bg={t.bg(o)} orientation={o} layout={layout} data={data} fontFamily={font.family} fill={fill} />
   );
 
-  const errorText = !value.fontChosen
-    ? 'Tick the circle under a font to choose it.'
-    : missing.length
-      ? `Tick a text layout for ${missing.map((t) => t.name).join(', ')}.`
-      : '';
+  const errorText = (targetMode === 'everyday' || targetMode === 'promo')
+    ? (missing.length ? `Tick a text layout for ${missing.map((t) => t.name).join(', ')}.` : '')
+    : !value.fontChosen
+      ? 'Tick the circle under a font to choose it.'
+      : missing.length
+        ? `Tick a text layout for ${missing.map((t) => t.name).join(', ')}.`
+        : '';
 
   const handleNext = () => {
     if (errorText) {
       setShowErrors(true);
-      (value.fontChosen ? layoutRef : fontRef).current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      (targetMode === 'everyday' || targetMode === 'promo' || value.fontChosen ? layoutRef : fontRef).current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       return;
     }
     onNext();
@@ -82,42 +127,84 @@ const FontLayoutStep: React.FC<FontLayoutStepProps> = ({ value: saved, onChange,
   return (
     <div className={card.card}>
       <div className={card.titleBar}>
-        <h2 className={card.headline}>Select your font and text layout</h2>
-        <p className={card.subline}>Pick a Google font and choose how the text sits on each ticket</p>
+        <h2 className={card.headline}>
+          {targetMode === 'everyday'
+            ? 'Select your Everyday ticket header & layout'
+            : targetMode === 'promo'
+              ? 'Select your promotional text layout'
+              : 'Select your font and text layout'}
+        </h2>
+        <p className={card.subline}>
+          {targetMode === 'everyday'
+            ? 'Pick a headline title and choose how the text sits on each ticket'
+            : targetMode === 'promo'
+              ? 'Choose how the text sits on each promotional ticket'
+              : 'Pick a Google font and choose how the text sits on each ticket'}
+        </p>
       </div>
 
-      <section className={card.section} ref={fontRef}>
-        <h3 className={card.sectionTitle}>Pick a Google Font</h3>
-        <Carousel
-          items={TICKET_FONTS}
-          index={value.fontIndex}
-          onIndexChange={(fontIndex) => set({ fontIndex, fontChosen: false })}
-          selected={value.fontChosen}
-          onSelect={() => set({ fontChosen: !value.fontChosen })}
-          label="font"
-          height={270}
-          renderItem={(f) => {
-            const i = TICKET_FONTS.indexOf(f);
-            return (
-              <TicketBackground
-                kind="promo"
-                variant={i}
-                orientation="portrait"
-                header={['New', 'Special', 'New', 'Advertised', 'Special'][i % 5]}
-                colour1={['#1aa3e0', '#4cb944', '#1aa3e0', '#f7e017', '#4cb944'][i % 5]}
-                colour2={['#ffffff', '#ffffff', '#ffffff', '#f7e017', '#4cb944'][i % 5]}
-              >
-                <div className={styles.fontSample} style={{ fontFamily: f.family }}>
-                  <span>Schriftbild</span>
-                  <span>Schriftbild</span>
-                  <span>Schriftbild</span>
-                  <small>{f.name}</small>
+      {targetMode === 'everyday' ? (
+        <section className={card.section}>
+          <div className={styles.headerOptions}>
+            {EVERYDAY_HEADER_OPTIONS.map((headerText) => {
+              const activeHeader = everyday.headers?.[0] || 'Everyday Value';
+              const isSelected = activeHeader.toLowerCase() === headerText.toLowerCase();
+              return (
+                <div
+                  key={headerText}
+                  className={`${styles.headerCard} ${isSelected ? styles.headerCardActive : ''}`}
+                  onClick={() => onChangeEveryday?.({ ...everyday, headers: [headerText] })}
+                >
+                  <div className={styles.headerCardRadio}>
+                    <div className={`${styles.radioCircle} ${isSelected ? styles.radioCircleActive : ''}`}>
+                      {isSelected && <div className={styles.radioDot} />}
+                    </div>
+                  </div>
+                  <div
+                    className={styles.headerBadge}
+                    style={isSelected ? { backgroundColor: brand.colour1 || '#eb2771', color: brand.colour2 || '#ffffff' } : undefined}
+                  >
+                    <span>{headerText}</span>
+                  </div>
                 </div>
-              </TicketBackground>
-            );
-          }}
-        />
-      </section>
+              );
+            })}
+          </div>
+        </section>
+      ) : targetMode === 'promo' ? null : (
+        <section className={card.section} ref={fontRef}>
+          <h3 className={card.sectionTitle}>Pick a Google Font</h3>
+          <Carousel
+            items={TICKET_FONTS}
+            index={value.fontIndex}
+            onIndexChange={(fontIndex) => set({ fontIndex, fontChosen: false })}
+            selected={value.fontChosen}
+            onSelect={() => set({ fontChosen: !value.fontChosen })}
+            label="font"
+            height={270}
+            renderItem={(f) => {
+              const i = TICKET_FONTS.indexOf(f);
+              return (
+                <TicketBackground
+                  kind="promo"
+                  variant={i}
+                  orientation="portrait"
+                  header={['New', 'Special', 'New', 'Advertised', 'Special'][i % 5]}
+                  colour1={['#1aa3e0', '#4cb944', '#1aa3e0', '#f7e017', '#4cb944'][i % 5]}
+                  colour2={['#ffffff', '#ffffff', '#ffffff', '#f7e017', '#4cb944'][i % 5]}
+                >
+                  <div className={styles.fontSample} style={{ fontFamily: f.family }}>
+                    <span>Schriftbild</span>
+                    <span>Schriftbild</span>
+                    <span>Schriftbild</span>
+                    <small>{f.name}</small>
+                  </div>
+                </TicketBackground>
+              );
+            }}
+          />
+        </section>
+      )}
 
       <section className={card.section} ref={layoutRef}>
         <h3 className={card.sectionTitle}>Pick a text layout for each ticket</h3>
@@ -154,7 +241,7 @@ const FontLayoutStep: React.FC<FontLayoutStepProps> = ({ value: saved, onChange,
             <figcaption>Landscape</figcaption>
           </figure>
         </div>
-        {showErrors && errorText && value.fontChosen && <p className={form.error}>{errorText}</p>}
+        {showErrors && errorText && (targetMode === 'everyday' || targetMode === 'promo' || value.fontChosen) && <p className={form.error}>{errorText}</p>}
       </section>
 
       <StepFooter

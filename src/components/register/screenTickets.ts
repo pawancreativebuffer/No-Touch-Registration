@@ -36,9 +36,16 @@ export const screenStyleOf = (screens: ScreenSetup, id: PromoTypeId) => screens.
 
 /** Promotions that count for the open tab */
 export const screenPromoTypes = (screens: ScreenSetup) => {
-  if (screens.mode === 'upload') return PROMO_TYPES.filter((t) => uploadComplete(screens, screens.typeUploads?.[t.id]));
-  if (screens.mode === 'ai') return PROMO_TYPES.filter((t) => screens.aiTypes?.includes(t.id) && screens.promoTypes?.includes(t.id));
-  return PROMO_TYPES.filter((t) => screens.promoTypes?.includes(t.id));
+  if (screens.mode === 'upload') {
+    const uploaded = PROMO_TYPES.filter((t) => uploadComplete(screens, screens.typeUploads?.[t.id]));
+    if (uploaded.length > 0) return uploaded;
+  }
+  if (screens.mode === 'ai') {
+    const ai = PROMO_TYPES.filter((t) => screens.aiTypes?.includes(t.id) && screens.promoTypes?.includes(t.id));
+    if (ai.length > 0) return ai;
+  }
+  const chosen = PROMO_TYPES.filter((t) => screens.promoTypes?.includes(t.id));
+  return chosen.length > 0 ? chosen : PROMO_TYPES.slice(0, 2);
 };
 
 export const screenTickets = (screens: ScreenSetup): ScreenTicketDef[] => {
@@ -49,7 +56,7 @@ export const screenTickets = (screens: ScreenSetup): ScreenTicketDef[] => {
       name: 'Everyday',
       mode: 'everyday',
       style: screens.everydayStyle,
-      header: EVERYDAY_HEADER,
+      header: screens.everydayHeader || EVERYDAY_HEADER,
       upload: upload ? screens.everydayUpload : undefined,
       layouts: ESL_EVERYDAY_LAYOUTS,
       recommended: 'price' as EslLayoutId,

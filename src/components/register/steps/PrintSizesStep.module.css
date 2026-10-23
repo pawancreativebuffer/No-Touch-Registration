@@ -145,6 +145,23 @@
 }
 
 /* ---------- Sizes ---------- */
+.groupHeading {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--secondary, #1f2937);
+  margin: 32px 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #eef0f3;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: -0.01em;
+}
+
+.firstGroup .groupHeading {
+  margin-top: 8px;
+}
+
 .sizes {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));

@@ -8,7 +8,7 @@ import Illustration from '../ui/Illustrations';
 import Qty from '../ui/Qty';
 import StepFooter from '../ui/StepFooter';
 import { money } from '../data';
-import { SCREEN_MOUNTS, SCREEN_SUBSCRIPTION } from '../devices';
+import { SCREEN_MODELS, SCREEN_MOUNTS, SCREEN_SUBSCRIPTION } from '../devices';
 import { mountFor, screenCount, screenNetwork, screenOrder, screenSubscriptionTotal, selectedScreens } from '../pricing';
 import { ScreenSetup } from '../state';
 
@@ -27,18 +27,18 @@ const ScreenBuyStep: React.FC<ScreenBuyStepProps> = ({ value, onChange, onBack, 
   const network = screenNetwork(value);
   const order = screenOrder(value);
 
-  const setScreenQty = (id: string, qty: number) =>
+  const setScreenQty = (id: string, qty: number) => {
+    const selected = qty > 0
+      ? (value.selected.includes(id) ? value.selected : [...value.selected, id])
+      : value.selected.filter((s) => s !== id);
     onChange({
       ...value,
       qty: { ...value.qty, [id]: qty },
-      selected: qty > 0 ? value.selected : value.selected.filter((s) => s !== id),
+      selected,
     });
+  };
 
   const handleNext = () => {
-    if (count === 0) {
-      setShowErrors(true);
-      return;
-    }
     onNext();
   };
 
@@ -46,11 +46,12 @@ const ScreenBuyStep: React.FC<ScreenBuyStepProps> = ({ value, onChange, onBack, 
     <div className={card.card}>
       <div className={card.titleBar}>
         <h2 className={card.headline}>Your Digital Screens package</h2>
-        <p className={card.subline}>We have matched mounting and network equipment to your screens. Adjust anything you like.</p>
+        <p className={card.subline}>Select your digital displays, mounting and network equipment. Adjust anything you like.</p>
       </div>
 
       <section className={card.section}>
-        <h3 className={card.sectionTitle}>Selected screens</h3>
+        <h3 className={card.sectionTitle}>Digital Screens</h3>
+        <p className={card.sectionIntro}>Select screen displays and quantities for your store.</p>
         <table className={choice.table}>
           <thead>
             <tr>
@@ -61,26 +62,32 @@ const ScreenBuyStep: React.FC<ScreenBuyStepProps> = ({ value, onChange, onBack, 
             </tr>
           </thead>
           <tbody>
-            {lines.map(({ model, qty }) => (
-              <tr key={model.id}>
-                <td>
-                  {model.size} screen {model.model}
-                  <small>{model.resolution} px</small>
-                </td>
-                <td>{money(model.price)}</td>
-                <td>
-                  <Qty value={qty} onChange={(q) => setScreenQty(model.id, q)} label={`${model.model} quantity`} />
-                </td>
-                <td>{money(model.price * qty)}</td>
-              </tr>
-            ))}
+            {SCREEN_MODELS.map((model) => {
+              const qty = value.qty[model.id] ?? (value.selected.includes(model.id) ? 1 : 0);
+              return (
+                <tr key={model.id}>
+                  <td>
+                    {model.size} {model.shape === 'bar' ? 'shelf edge' : model.shape === 'wide' ? 'wide' : 'portrait'} screen {model.model}
+                    <small>{model.resolution} px</small>
+                  </td>
+                  <td>{money(model.price)}</td>
+                  <td>
+                    <Qty value={qty} onChange={(q) => setScreenQty(model.id, q)} label={`${model.model} quantity`} />
+                  </td>
+                  <td>{money(model.price * qty)}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </section>
 
       <section className={card.section}>
         <h3 className={card.sectionTitle}>Mounting brackets and stands</h3>
-        {lines.map(({ model, qty }) => {
+        {lines.length === 0 ? (
+          <p className={card.sectionIntro}>Select screens above to configure mounting brackets and stands.</p>
+        ) : (
+          lines.map(({ model, qty }) => {
           const mount = mountFor(model, value);
           if (!mount) {
             return (
@@ -128,7 +135,7 @@ const ScreenBuyStep: React.FC<ScreenBuyStepProps> = ({ value, onChange, onBack, 
               <span className={choice.itemTotal}>{money(SCREEN_MOUNTS[mount].price * qty)}</span>
             </div>
           );
-        })}
+        }))}
       </section>
 
       <section className={card.section}>
